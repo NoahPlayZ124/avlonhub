@@ -2038,6 +2038,7 @@ local player = playerstable.LocalPlayer local playersteam = player.Team.Name
 --///////////////////////////////////////////////////////////////////////--
 
 local esp_enabled = false
+local esp_boxespenabled = false
 local esp_chamsenabled = false
 local esp_tracersenabled = false
 local esp_color = Color3.new(1, 0, 0)
@@ -2052,6 +2053,11 @@ ESP_Window:Show()
 
 local ESP_Toggle = ESP_Window:AddSwitch("Enabled", function(bool)
     esp_enabled = bool
+end)
+
+
+local ESP_BoxESPToggle = ESP_Window:AddSwitch("Box ESP", function(bool)
+    esp_boxespenabled = bool
 end)
 
 local ESP_ChamsToggle = ESP_Window:AddSwitch("Chams", function(bool)
@@ -2098,115 +2104,117 @@ game:GetService('RunService').Stepped:Connect(function()
 	local players = game.Workspace:FindFirstChild("Players")
 	local otherteam = players:FindFirstChild(otherTeamR)
 
-	--ESP
 	if esp_enabled then
-        for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
-            if v.Name == "E" then 
-                v:Destroy() 
-            end 
-        end
-        for i,v in pairs(otherteam:GetChildren()) do
-            local billboard = Instance.new("BillboardGui")
-            billboard.Name = "E"
-            billboard.AlwaysOnTop = true
-            billboard.Size = UDim2.new(4, 0, 5.5, 0)
-            billboard.StudsOffset = Vector3.new(0, 0, 0)
-            billboard.Adornee = v.Torso
-            billboard.Parent = game.CoreGui
-            local f1 = Instance.new("Frame", billboard)
-            local f2 = Instance.new("Frame", billboard)
-            local f3 = Instance.new("Frame", billboard)
-            local f4 = Instance.new("Frame", billboard)
-            f1.BorderSizePixel = 0
-            f2.BorderSizePixel = 0
-            f3.BorderSizePixel = 0
-            f4.BorderSizePixel = 0
-            if esp_rainbow then
-                f1.BackgroundColor3 = rainbowcolor
-                f2.BackgroundColor3 = rainbowcolor
-                f3.BackgroundColor3 = rainbowcolor
-                f4.BackgroundColor3 = rainbowcolor
-            else
-                f1.BackgroundColor3 = esp_color
-                f2.BackgroundColor3 = esp_color
-                f3.BackgroundColor3 = esp_color
-                f4.BackgroundColor3 = esp_color
-            end
-            f1.Size = UDim2.new(0, 1, 1, 0)
-            f2.Size = UDim2.new(0, 1, 1, 0)
-            f3.Size = UDim2.new(1, 0, 0, 1)
-            f4.Size = UDim2.new(1, 0, 0, 1)
-            f1.Position = UDim2.new(0, 0, 0, 0)
-            f2.Position = UDim2.new(1, -1, 0, 0)
-            f3.Position = UDim2.new(0, 0, 0, 0)
-            f4.Position = UDim2.new(0, 0, 1, -1)
-        end
-    else
-        for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
-            if v.Name == "E" then 
-                v:Destroy() 
-            end 
-        end
-	end
-	
-
-
-	--Chams
-	if esp_chamsenabled then
-        for i,v in pairs(otherteam:GetChildren()) do
-			for i2,v2 in pairs(v:GetChildren()) do
-				if v2:IsA("BasePart") and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
-					local adornment = Instance.new("BoxHandleAdornment", v2)
-					adornment.AlwaysOnTop = true
-					adornment.Transparency = 0.3
-					adornment.Adornee = v2
-					adornment.ZIndex = 5
-					adornment.Size = v2.Size
-					if esp_rainbow then
-						adornment.Color3 = rainbowcolor
-					else
-						adornment.Color3 = esp_color
-					end
-				elseif v2:FindFirstChild("BoxHandleAdornment") then
-					local c = v2:FindFirstChild("BoxHandleAdornment")
-					c.Size = v2.Size
-					if esp_rainbow then
-						c.Color3 = rainbowcolor
-					else
-						c.Color3 = esp_color
-					end
-				end
+		--ESP
+		if esp_boxespenabled then
+			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				if v.Name == "E" then 
+					v:Destroy() 
+				end 
 			end
-		end
-	else
-        for i,v in pairs(otherteam:GetChildren()) do
-			for i2,v2 in pairs(v:GetChildren()) do
-				if v2:FindFirstChild("BoxHandleAdornment") then
-					v2:FindFirstChild("BoxHandleAdornment"):Remove()
-				end
-			end
-		end
-	end
-
-
-	--Tracers
-	if esp_tracersenabled then
-		for i,v in pairs(otherteam:GetChildren()) do
-			local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
-			if onScreen then
-				local Line = Drawing.new("Line")
-				Line.Visible = true
-				Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
-				Line.To = Vector2.new(vector.X, vector.Y)
+			for i,v in pairs(otherteam:GetChildren()) do
+				local billboard = Instance.new("BillboardGui")
+				billboard.Name = "E"
+				billboard.AlwaysOnTop = true
+				billboard.Size = UDim2.new(4, 0, 5.5, 0)
+				billboard.StudsOffset = Vector3.new(0, 0, 0)
+				billboard.Adornee = v.Torso
+				billboard.Parent = game.CoreGui
+				local f1 = Instance.new("Frame", billboard)
+				local f2 = Instance.new("Frame", billboard)
+				local f3 = Instance.new("Frame", billboard)
+				local f4 = Instance.new("Frame", billboard)
+				f1.BorderSizePixel = 0
+				f2.BorderSizePixel = 0
+				f3.BorderSizePixel = 0
+				f4.BorderSizePixel = 0
 				if esp_rainbow then
-					Line.Color = rainbowcolor
+					f1.BackgroundColor3 = rainbowcolor
+					f2.BackgroundColor3 = rainbowcolor
+					f3.BackgroundColor3 = rainbowcolor
+					f4.BackgroundColor3 = rainbowcolor
 				else
-					Line.Color = esp_color
+					f1.BackgroundColor3 = esp_color
+					f2.BackgroundColor3 = esp_color
+					f3.BackgroundColor3 = esp_color
+					f4.BackgroundColor3 = esp_color
 				end
-				Line.Thickness = 1
-				Line.Transparency = 1
-				wait(0.00000000000000000001)
-				Line:Remove()
+				f1.Size = UDim2.new(0, 1, 1, 0)
+				f2.Size = UDim2.new(0, 1, 1, 0)
+				f3.Size = UDim2.new(1, 0, 0, 1)
+				f4.Size = UDim2.new(1, 0, 0, 1)
+				f1.Position = UDim2.new(0, 0, 0, 0)
+				f2.Position = UDim2.new(1, -1, 0, 0)
+				f3.Position = UDim2.new(0, 0, 0, 0)
+				f4.Position = UDim2.new(0, 0, 1, -1)
+			end
+		else
+			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				if v.Name == "E" then 
+					v:Destroy() 
+				end 
+			end
+		end
+
+
+
+		--Chams
+		if esp_chamsenabled then
+			for i,v in pairs(otherteam:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:IsA("BasePart") and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
+						local adornment = Instance.new("BoxHandleAdornment", v2)
+						adornment.AlwaysOnTop = true
+						adornment.Transparency = 0.3
+						adornment.Adornee = v2
+						adornment.ZIndex = 5
+						adornment.Size = v2.Size
+						if esp_rainbow then
+							adornment.Color3 = rainbowcolor
+						else
+							adornment.Color3 = esp_color
+						end
+					elseif v2:FindFirstChild("BoxHandleAdornment") then
+						local c = v2:FindFirstChild("BoxHandleAdornment")
+						c.Size = v2.Size
+						if esp_rainbow then
+							c.Color3 = rainbowcolor
+						else
+							c.Color3 = esp_color
+						end
+					end
+				end
+			end
+		else
+			for i,v in pairs(otherteam:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:FindFirstChild("BoxHandleAdornment") then
+						v2:FindFirstChild("BoxHandleAdornment"):Remove()
+					end
+				end
+			end
+		end
+
+
+		--Tracers
+		if esp_tracersenabled then
+			for i,v in pairs(otherteam:GetChildren()) do
+				local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
+				if onScreen then
+					local Line = Drawing.new("Line")
+					Line.Visible = true
+					Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
+					Line.To = Vector2.new(vector.X, vector.Y)
+					if esp_rainbow then
+						Line.Color = rainbowcolor
+					else
+						Line.Color = esp_color
+					end
+					Line.Thickness = 1
+					Line.Transparency = 1
+					wait(0.00000000000000000001)
+					Line:Remove()
+				end
 			end
 		end
 	end
@@ -2367,8 +2375,8 @@ local Mods_RapidFireToggle = Mods_Window:AddSwitch("Rapid Fire", function(bool)
 			local mod = require(v) 
 			--Rapid Fire
 			mod["bulletspeed"] = 3000
-			mod["range0"] = math.huge
-			mod["range1"] = math.huge
+			mod["range0"] = 99999999999999999999999999999999
+			mod["range1"] = 99999999999999999999999999999999
 		end
 	elseif bool == false then
 		for i,v in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
@@ -2405,6 +2413,7 @@ local Mods_RainbowGun = Mods_Window:AddButton("Rainbow Gun", function(bool)
 					for e,f in pairs(b:GetChildren()) do 
 						if f:IsA("BasePart") then 
 							f.Color = Color3.fromHSV(tick()%5/5,1,1)
+							f.Material = Enum.Material.Neon
 						end
 					end
 				end
@@ -2494,7 +2503,7 @@ local Mods2_NoSwayToggle = Mods2_Window:AddSwitch("No Sway", function(bool)
 			--No Sway
 			mod["swayamp"] = 0
 			mod["swayspeed"] = 0
-			mod["steadyspeed"] = 0
+			mod["steadyspeed"] = 100
 			mod["breathspeed"] = 0
 		end
 	elseif bool == false then
