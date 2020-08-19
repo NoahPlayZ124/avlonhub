@@ -2025,7 +2025,7 @@ end
 
 local Window = library:AddWindow("AvlonHub (Phantom Forces)", {
     main_color = Color3.fromRGB(41, 74, 122),
-    min_size = Vector2.new(500, 280),
+    min_size = Vector2.new(500, 307),
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = false,
 })
