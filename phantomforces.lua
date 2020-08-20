@@ -2158,6 +2158,7 @@ if Drawing then
 					f2.Position = UDim2.new(1, -1, 0, 0)
 					f3.Position = UDim2.new(0, 0, 0, 0)
 					f4.Position = UDim2.new(0, 0, 1, -1)
+					f4.Name = "Bottom"
 				end
 			else
 				for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
@@ -2217,7 +2218,7 @@ if Drawing then
 						end)
 						allTracers[i] = nil
 					end
-					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.Torso.CFrame * CFrame.new(0, v.AssignedTo.Torso.Size.Y - 5, 0).p);
+					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.Torso.CFrame * CFrame.new(0, v.AssignedTo.Torso.Size.Y, 0).p);
 					if onScreen == false then
 						print("Off screen")
 						pcall(function()
@@ -2230,7 +2231,7 @@ if Drawing then
 				for i,v in pairs(otherteam:GetChildren()) do
 					for i2,v2 in pairs(allTracers) do
 						if v2.AssignedTo == v then
-							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y - 5, 0).p);
+							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
 							if onScreen then
 								v2.value.To = Vector2.new(vector.X, vector.Y)
 								if esp_rainbow then
@@ -2243,7 +2244,7 @@ if Drawing then
 					end
 
 					if TracerExists(v) == false then
-						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y - 5, 0).p);
+						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
 						if onScreen then
 							local Line = Drawing.new("Line")
 							Line.Visible = true
