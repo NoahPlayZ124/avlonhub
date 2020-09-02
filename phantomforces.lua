@@ -2220,7 +2220,6 @@ if Drawing then
 					end
 					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.Torso.CFrame * CFrame.new(0, v.AssignedTo.Torso.Size.Y, 0).p);
 					if onScreen == false then
-						print("Off screen")
 						pcall(function()
 							allTracers[i].value:Remove();
 						end)
