@@ -2048,7 +2048,7 @@ if Drawing then
 	local counter = 0
 	
 	
-	local ESP_Window = Window:AddTab("ESP")
+	local ESP_Window = Window:AddTab("Visuals")
 	ESP_Window:Show()
 	
 	local ESP_Toggle = ESP_Window:AddSwitch("Enabled", function(bool)
