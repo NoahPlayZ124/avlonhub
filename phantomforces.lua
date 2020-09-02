@@ -2160,12 +2160,6 @@ if Drawing then
 					f4.Position = UDim2.new(0, 0, 1, -1)
 					f4.Name = "Bottom"
 				end
-			else
-				for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
-					if v.Name == "E" then 
-						v:Destroy() 
-					end 
-				end
 			end
 	
 	
@@ -2174,27 +2168,29 @@ if Drawing then
 			if esp_chamsenabled then
 				for i,v in pairs(otherteam:GetChildren()) do
 					for i2,v2 in pairs(v:GetChildren()) do
-						if v2:IsA("BasePart") and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
-							local adornment = Instance.new("BoxHandleAdornment", v2)
-							adornment.AlwaysOnTop = true
-							adornment.Transparency = 0.3
-							adornment.Adornee = v2
-							adornment.ZIndex = 5
-							adornment.Size = v2.Size
-							if esp_rainbow then
-								adornment.Color3 = rainbowcolor
-							else
-								adornment.Color3 = esp_color
+						pcall(function()
+							if (v2:IsA("BasePart") or (v2:IsA("Model") and v2:FindFirstChild("Slot1"))) and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
+								local adornment = Instance.new("BoxHandleAdornment", v2)
+								adornment.AlwaysOnTop = true
+								adornment.Transparency = 0.3
+								adornment.Adornee = v2
+								adornment.ZIndex = 5
+								adornment.Size = v2.Size
+								if esp_rainbow then
+									adornment.Color3 = rainbowcolor
+								else
+									adornment.Color3 = esp_color
+								end
+							elseif v2:FindFirstChild("BoxHandleAdornment") then
+								local c = v2:FindFirstChild("BoxHandleAdornment")
+								c.Size = v2.Size
+								if esp_rainbow then
+									c.Color3 = rainbowcolor
+								else
+									c.Color3 = esp_color
+								end
 							end
-						elseif v2:FindFirstChild("BoxHandleAdornment") then
-							local c = v2:FindFirstChild("BoxHandleAdornment")
-							c.Size = v2.Size
-							if esp_rainbow then
-								c.Color3 = rainbowcolor
-							else
-								c.Color3 = esp_color
-							end
-						end
+						end)
 					end
 				end
 			else
@@ -2262,16 +2258,70 @@ if Drawing then
 						end
 					end
 				end
-			else
-				for i,v in pairs(allTracers) do
-					pcall(function()
-						allTracers[i].value:Remove();
-					end)
-					allTracers[i] = nil
+			end
+		else
+			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				if v.Name == "E" then 
+					v:Destroy() 
+				end 
+			end
+			for i,v in pairs(otherteam:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:FindFirstChild("BoxHandleAdornment") then
+						v2:FindFirstChild("BoxHandleAdornment"):Remove()
+					end
+				end
+			end
+			for i,v in pairs(game.Workspace.Players[game.Players.LocalPlayer.Team.Name]:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:FindFirstChild("BoxHandleAdornment") then
+						v2:FindFirstChild("BoxHandleAdornment"):Remove()
+					end
+				end
+			end
+			for i,v in pairs(allTracers) do
+				pcall(function()
+					v.value:Remove();
+				end)
+				v = nil
+			end
+		end
+
+		if esp_boxespenabled == false then
+			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				if v.Name == "E" then 
+					v:Destroy() 
+				end 
+			end
+		end
+
+		if esp_chamsenabled == false then
+			for i,v in pairs(otherteam:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:FindFirstChild("BoxHandleAdornment") then
+						v2:FindFirstChild("BoxHandleAdornment"):Remove()
+					end
+				end
+			end
+		else
+			for i,v in pairs(game.Workspace.Players[game.Players.LocalPlayer.Team.Name]:GetChildren()) do
+				for i2,v2 in pairs(v:GetChildren()) do
+					if v2:FindFirstChild("BoxHandleAdornment") then
+						v2:FindFirstChild("BoxHandleAdornment"):Remove()
+					end
 				end
 			end
 		end
-	
+
+		if esp_tracersenabled == false then
+			for i,v in pairs(allTracers) do
+				pcall(function()
+					v.value:Remove();
+				end)
+				v = nil
+			end
+		end
+
 		--Rainbow
 		if esp_rainbow then
 			ESP_ColorPicker:Set(rainbowcolor)
