@@ -2025,7 +2025,7 @@ if Drawing then
 	
 	local Window = library:AddWindow("AvlonHub (Phantom Forces)", {
 		main_color = Color3.fromRGB(41, 74, 122),
-		min_size = Vector2.new(500, 307),
+		min_size = Vector2.new(500, 328),
 		toggle_key = Enum.KeyCode.RightShift,
 		can_resize = false,
 	})
@@ -2040,9 +2040,10 @@ if Drawing then
 	local esp_enabled = false
 	local esp_boxespenabled = false
 	local esp_chamsenabled = false
-	local esp_tracersenabled = false
+    local esp_tracersenabled = false
+    local esp_rainbow = false
 	local esp_color = Color3.new(1, 0, 0)
-	local esp_rainbow = false
+	local esp_chamstransparency = 0.3
 	
 	function zigzag(X) return math.acos(math.cos(X*math.pi))/math.pi end
 	local counter = 0
@@ -2068,10 +2069,26 @@ if Drawing then
 		esp_tracersenabled = bool
 	end)
 	
-	local ESP_ColorPicker = ESP_Window:AddColorPicker(function(color)
+    
+    local ESP_ChamsTransparency = ESP_Window:AddSlider("Chams Transparency", function(trans)
+        local num
+        if trans == 100 then
+            num = tonumber(1.0)
+        else
+            num = tonumber("0." .. string.sub(trans, 1, 1) .. string.sub(trans, 2, 2))
+        end
+        esp_chamstransparency = num
+	end, { 
+		["min"] = 0, 
+		["max"] = 100, 
+		["readonly"] = false,
+    })
+    ESP_ChamsTransparency:Set(30)
+
+    local ESP_ColorPicker = ESP_Window:AddColorPicker(function(color)
 		esp_color = color
 	end)
-	ESP_ColorPicker:Set(esp_color)
+    ESP_ColorPicker:Set(esp_color)
 	
 	local ESP_HA = ESP_Window:AddHorizontalAlignment()
 	ESP_HA:AddButton("Rainbow", function()
@@ -2172,7 +2189,7 @@ if Drawing then
 							if (v2:IsA("BasePart") or (v2:IsA("Model") and v2:FindFirstChild("Slot1"))) and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
 								local adornment = Instance.new("BoxHandleAdornment", v2)
 								adornment.AlwaysOnTop = true
-								adornment.Transparency = 0.3
+								adornment.Transparency = esp_chamstransparency
 								adornment.Adornee = v2
 								adornment.ZIndex = 5
 								adornment.Size = v2.Size
@@ -2183,7 +2200,8 @@ if Drawing then
 								end
 							elseif v2:FindFirstChild("BoxHandleAdornment") then
 								local c = v2:FindFirstChild("BoxHandleAdornment")
-								c.Size = v2.Size
+                                c.Size = v2.Size
+                                c.Transparency = esp_chamstransparency
 								if esp_rainbow then
 									c.Color3 = rainbowcolor
 								else
