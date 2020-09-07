@@ -2185,66 +2185,69 @@ game:GetService('RunService').Stepped:Connect(function()
 
 		--Tracers
 		if visuals_tracersenabled then
-			for i,v in pairs(allTracers) do
-				if otherteam:FindFirstChild(v.AssignedTo) ~= true then
-					pcall(function()
-						allTracers[i].value:Remove();
-					end)
-					allTracers[i] = nil
-				end
-				local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.Torso.CFrame * CFrame.new(0, v.AssignedTo.Torso.Size.Y, 0).p);
-				if onScreen == false then
-					pcall(function()
-						allTracers[i].value:Remove();
-					end)
-					allTracers[i] = nil
-				end
-			end
+			for i8,v8 in pairs(game.Workspace:GetChildren()) do
+				if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) and (game.Players[v.Name].Team ~= game.Players.LocalPlayer.Team) then`
+					for i,v in pairs(allTracers) do
+						if v8:FindFirstChild(v.AssignedTo) ~= true then
+							pcall(function()
+								allTracers[i].value:Remove();
+							end)
+							allTracers[i] = nil
+						end
+						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.UpperTorso.CFrame * CFrame.new(0, v.AssignedTo.UpperTorso.Size.Y, 0).p);
+						if onScreen == false then
+							pcall(function()
+								allTracers[i].value:Remove();
+							end)
+							allTracers[i] = nil
+						end
+					end
 
-			for i,v in pairs(otherteam:GetChildren()) do
-				for i2,v2 in pairs(allTracers) do
-					if v2.AssignedTo == v then
-						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
-						if onScreen then
-							v2.value.To = Vector2.new(vector.X, vector.Y)
-							if esp_rainbow then
-								v2.value.Color = rainbowcolor
-							else
-								v2.value.Color = esp_color
+					for i,v in pairs(v8:GetChildren()) do
+						for i2,v2 in pairs(allTracers) do
+							if v2.AssignedTo == v then
+								local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.UpperTorso.CFrame * CFrame.new(0, v.UpperTorso.Size.Y, 0).p);
+								if onScreen then
+									v2.value.To = Vector2.new(vector.X, vector.Y)
+									if esp_rainbow then
+										v2.value.Color = rainbowcolor
+									else
+										v2.value.Color = esp_color
+									end
+								end
+							end
+						end
+
+						if TracerExists(v) == false then
+							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.UpperTorso.CFrame * CFrame.new(0, v.UpperTorso.Size.Y, 0).p);
+							if onScreen then
+								local Line = Drawing.new("Line")
+								Line.Visible = true
+								Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
+								Line.To = Vector2.new(vector.X, vector.Y)
+								if esp_rainbow then
+									Line.Color = rainbowcolor
+								else
+									Line.Color = esp_color
+								end
+								Line.Thickness = 1
+								Line.Transparency = 1
+
+								local _Line = { value = Line, AssignedTo = v }
+								table.insert(allTracers, _Line)
 							end
 						end
 					end
-				end
-
-				if TracerExists(v) == false then
-					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
-					if onScreen then
-						local Line = Drawing.new("Line")
-						Line.Visible = true
-						Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
-						Line.To = Vector2.new(vector.X, vector.Y)
-						if esp_rainbow then
-							Line.Color = rainbowcolor
-						else
-							Line.Color = esp_color
-						end
-						Line.Thickness = 1
-						Line.Transparency = 1
-
-						local _Line = { value = Line, AssignedTo = v }
-						table.insert(allTracers, _Line)
+				else
+					for i,v in pairs(allTracers) do
+						pcall(function()
+							allTracers[i].value:Remove();
+						end)
+						allTracers[i] = nil
 					end
 				end
 			end
-		else
-			for i,v in pairs(allTracers) do
-				pcall(function()
-					allTracers[i].value:Remove();
-				end)
-				allTracers[i] = nil
-			end
 		end
-	end
 
 	if visuals_boxespenabled == false then
 		for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
