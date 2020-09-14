@@ -2446,25 +2446,29 @@ if Drawing then
 	local Mods_InstantReloadToggle = Mods_Window:AddSwitch("Instant Reload", function(bool)
 		if bool then
 			for i2,v2 in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
-				local GunData = require(v2)
-				--Instant Reload
-				for i,v in pairs(GunData.animations) do
-					if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
-						v.oldtimescale = v.timescale
-						v.timescale = 0
+				pcall(function()
+					local GunData = require(v2)
+					--Instant Reload
+					for i,v in pairs(GunData.animations) do
+						if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
+							v.oldtimescale = v.timescale
+							v.timescale = 0
+						end
 					end
-				end
+				end)
 			end
 		elseif bool == false then
 			for i2,v2 in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
-				local GunData = require(v2)
-				local backupmod = require(backupModules[v2.Name]);
-				--Instant Reload
-				for i,v in pairs(GunData.animations) do
-					if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
-						v.timescale = v.oldtimescale
+				pcall(function()
+					local GunData = require(v2)
+					local backupmod = require(backupModules[v2.Name]);
+					--Instant Reload
+					for i,v in pairs(GunData.animations) do
+						if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
+							v.timescale = v.oldtimescale
+						end
 					end
-				end
+				end)
 			end
 		end
 	end)
