@@ -2441,6 +2441,33 @@ if Drawing then
 			end
 		end
 	end)
+
+		--Instant Aim
+	local Mods_InstantReloadToggle = Mods_Window:AddSwitch("Instant Reload", function(bool)
+		if bool then
+			for i2,v2 in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
+				local GunData = require(v2)
+				--Instant Reload
+				for i,v in pairs(GunData.animations) do
+					if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
+						v.oldtimescale = v.timescale
+						v.timescale = 0
+					end
+				end
+			end
+		elseif bool == false then
+			for i2,v2 in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
+				local GunData = require(v2)
+				local backupmod = require(backupModules[v2.Name]);
+				--Instant Reload
+				for i,v in pairs(GunData.animations) do
+					if i:lower():find("reload") or i:lower():find("pullbolt") or i:lower():find("onfire") then
+						v.timescale = v.oldtimescale
+					end
+				end
+			end
+		end
+	end)
 	
 		--NoFallDamage
 	local Mods_NoFallDamageToggle = Mods_Window:AddSwitch("No Fall Damage", function(bool)
@@ -2465,26 +2492,6 @@ if Drawing then
 				mod["hipfirespread"] = backupmod["hipfirespread"]
 				mod["hipfirespreadrecover"] = backupmod["hipfirespreadrecover"]
 				mod["hipfirestability"] = backupmod["hipfirestability"]
-			end
-		end
-	end)
-	
-		--Instant Aim
-	local Mods_InstantAimToggle = Mods_Window:AddSwitch("Instant Aim", function(bool)
-		if bool then
-			for i,v in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
-				local mod = require(v) 
-				--Instant Aim
-				mod["aimspeed"] = 10000
-				mod["equipspeed"] = 10000
-			end
-		elseif bool == false then
-			for i,v in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
-				local mod = require(v);
-				local backupmod = require(backupModules[v.Name]);
-				--Instant Aim
-				mod["aimspeed"] = backupmod["aimspeed"]
-				mod["equipspeed"] = backupmod["equipspeed"]
 			end
 		end
 	end)
@@ -2812,6 +2819,6 @@ if Drawing then
 			end
 		end
 	end)
-	else
-		game.Players.LocalPlayer:Kick("Your exploit does not have a Drawing API!")
-	end
+else
+	game.Players.LocalPlayer:Kick("Your exploit does not have a Drawing API!")
+end
