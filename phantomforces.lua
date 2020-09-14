@@ -2732,6 +2732,28 @@ if Drawing then
 	local Other_FlyToggle = Other_Window:AddSwitch("Fly", function(bool)
 		Other_Fly = bool
 	end)
+
+		--Fullbright
+	local Other_FullBrightToggle = Other_Window:AddSwitch("Fullbright", function(bool)
+		if bool then
+			game:GetService("Lighting").GlobalShadows = false
+			game:GetService("Lighting").Brightness = 10
+		elseif bool == false then
+			game:GetService("Lighting").GlobalShadows = true
+			game:GetService("Lighting").Brightness = 1
+		end
+	end)
+
+		--Break All Windows
+	local Other_BreakAllWindowsToggle = Other_Window:AddButton("Break All Windows", function()
+        local Windows = {}
+        for i,v in next, workspace:GetDescendants() do
+            if v.Name:lower() == "window" then
+                table.insert(Windows,v)
+            end
+        end
+        effects:breakwindows(Windows)
+	end)
 	
 	function getbasewalkspeed()
 		for a,b in pairs(getgc(true)) do
