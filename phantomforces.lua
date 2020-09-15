@@ -2353,9 +2353,117 @@ if Drawing then
 	--///////////////////////////////////////////////////////////////////////--
 	
 	local Aimbot_Window = Window:AddTab("Aimbot")
-	
-	Aimbot_Window:AddLabel("Comming soon!")
-	
+    Aimbot_Window:AddLabel("Aimbot is in beta! (Unstable)")
+
+    local Aimbot_Enabled = true;
+    local Aimbot_WallCheck = true;
+    local Aimbot_ShootAt = "Torso";
+
+		--Enabled
+    local Aimbot_EnabledToggle = Aimbot_Window:AddSwitch("Enabled", function(bool)
+        Aimbot_Enabled = bool
+    end)
+
+        --Wallcheck
+    local Aimbot_WallcheckToggle = Aimbot_Window:AddSwitch("Wallcheck", function(bool)
+        Aimbot_WallCheck = bool
+    end)
+
+        --AimAt
+    local Aimbot_AimAtDropdown = Aimbot_Window:AddDropdown("Aim At", function(object)
+        if tostring(object) == "Head" then
+            Aimbot_ShootAt = "Head"
+        elseif tostring(object) == "Torso" then
+            Aimbot_ShootAt = "Torso"
+        end
+    end)
+    Aimbot_AimAtDropdown:Add("Head")
+    Aimbot_AimAtDropdown:Add("Torso")
+    
+    local PLAYER = game.Players.LocalPlayer
+    local MOUSE = PLAYER:GetMouse()
+    local CC = game.Workspace.CurrentCamera
+    
+    local Aimbot_ENABLED = false
+        
+    --This IS NOT made by me. i did change some stuff (cant find real owner, contact me if you are! Spoorloos#7871, then ill add credits)
+    function GetNearestPlayerToMouse()
+        local PLAYERS      = {}
+        local PLAYER_HOLD  = {}
+        local DISTANCES    = {}
+        
+        for i,v in pairs(game.Workspace.Players:GetChildren()) do
+           if v.Name ~= PLAYER.Team.Name then
+                for i,v2 in pairs(v:GetChildren()) do
+                    table.insert(PLAYERS, v2)
+                end
+           end
+        end
+        
+        for i, v in pairs(PLAYERS) do
+            local AIM = v:FindFirstChild("Head")
+            if AIM ~= nil then
+                local DISTANCE                 = (AIM.Position - game.Workspace.CurrentCamera.CoordinateFrame.p).magnitude
+                local RAY                      = Ray.new(game.Workspace.CurrentCamera.CoordinateFrame.p, (MOUSE.Hit.p - CC.CoordinateFrame.p).unit * DISTANCE)
+                local HIT,POS                  = game.Workspace:FindPartOnRay(RAY, game.Workspace)
+                local DIFF                     = math.floor((POS - AIM.Position).magnitude)
+                PLAYER_HOLD[v.Name .. i]       = {}
+                PLAYER_HOLD[v.Name .. i].dist  = DISTANCE
+                PLAYER_HOLD[v.Name .. i].plr   = v
+                PLAYER_HOLD[v.Name .. i].diff  = DIFF
+                table.insert(DISTANCES, DIFF)
+            end
+        end
+        
+        if unpack(DISTANCES) == nil then
+            return false
+        end
+    
+        local L_DISTANCE = math.floor(math.min(unpack(DISTANCES)))
+        if L_DISTANCE >= 300 then
+            return false
+        end
+    
+        for i, v in pairs(PLAYER_HOLD) do
+            if v.diff == L_DISTANCE then
+                return v.plr
+            end
+        end
+    
+        return false
+    end
+    
+    MOUSE.Button2Up:connect(function(KEY)
+        Aimbot_ENABLED = false
+    end)
+    
+    MOUSE.Button2Down:connect(function(KEY)
+        Aimbot_ENABLED = true
+    end)
+    
+    local function WallChecker(p, ...)
+        return #game.Workspace.CurrentCamera:GetPartsObscuringTarget({p}, {cam, game.Players.LocalPlayer.Character, ...}) == 0
+    end
+    
+    game:GetService('RunService').RenderStepped:connect(function()
+        if Aimbot_ENABLED then 
+            local Target = GetNearestPlayerToMouse()
+            local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(Target[Aimbot_ShootAt].Position)
+            local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
+            local incrementX, incrementY = (aimAt.X - mouseLocation.X) / 10, (aimAt.Y - mouseLocation.Y) / 10
+        
+            if game.Players.LocalPlayer.Team.Name ~= Target.Parent.Name and Aimbot_Enabled == true then
+                if Aimbot_WallCheck then
+                    if WallChecker(Target[Aimbot_ShootAt].Position, Target) == true then
+                        mousemoverel(incrementX, incrementY)
+                    end
+                else
+                    mousemoverel(incrementX, incrementY)
+                end
+            end
+        end
+    end)
+
 	--///////////////////////////////////////////////////////////////////////--
 	--                                 Mods                                  --
 	--///////////////////////////////////////////////////////////////////////--
