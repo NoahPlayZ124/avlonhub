@@ -2356,7 +2356,8 @@ if Drawing then
     Aimbot_Window:AddLabel("Aimbot is in beta! (Unstable)")
 
     local Aimbot_Enabled = false;
-    local Aimbot_WallCheck = false;
+	local Aimbot_WallCheck = false;
+	local Aimbot_ShootAtRandom = false;
     local Aimbot_ShootAt = "Head";
 
 		--Enabled
@@ -2372,13 +2373,18 @@ if Drawing then
         --AimAt
     local Aimbot_AimAtDropdown = Aimbot_Window:AddDropdown("Aim At", function(object)
         if tostring(object) == "Head" then
-            Aimbot_ShootAt = "Head"
+			Aimbot_ShootAt = "Head"
+			Aimbot_ShootAtRandom = false
         elseif tostring(object) == "Torso" then
-            Aimbot_ShootAt = "Torso"
-        end
+			Aimbot_ShootAt = "Torso"
+			Aimbot_ShootAtRandom = false
+		elseif tostring(object) == "Random" then
+			Aimbot_ShootAtRandom = true
+		end
     end)
     Aimbot_AimAtDropdown:Add("Head")
-    Aimbot_AimAtDropdown:Add("Torso")
+	Aimbot_AimAtDropdown:Add("Torso")
+	Aimbot_AimAtDropdown:Add("Random")
     
     local PLAYER = game.Players.LocalPlayer
     local MOUSE = PLAYER:GetMouse()
@@ -2437,8 +2443,22 @@ if Drawing then
         Aimbot_ENABLED = false
     end)
     
-    MOUSE.Button2Down:connect(function(KEY)
-        Aimbot_ENABLED = true
+	MOUSE.Button2Down:connect(function(KEY)
+		Aimbot_ENABLED = true
+		if Aimbot_ShootAtRandom then
+			local number = math.random(1, 5)
+			if number == 1 or number == 2 or number == 3 or number == 4 then
+				if number == 1 or number == 2 then
+					Aimbot_ShootAt = "Torso"
+				elseif number == 3 then
+					Aimbot_ShootAt = "Left Leg"
+				elseif number == 4 then
+					Aimbot_ShootAt = "Right Leg"
+				end
+			elseif number == 5 then
+				Aimbot_ShootAt = "Head"
+			end
+		end
     end)
     
     local function WallChecker(p, ...)
