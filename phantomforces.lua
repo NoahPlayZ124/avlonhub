@@ -2355,9 +2355,9 @@ if Drawing then
 	local Aimbot_Window = Window:AddTab("Aimbot")
     Aimbot_Window:AddLabel("Aimbot is in beta! (Unstable)")
 
-    local Aimbot_Enabled = true;
-    local Aimbot_WallCheck = true;
-    local Aimbot_ShootAt = "Torso";
+    local Aimbot_Enabled = false;
+    local Aimbot_WallCheck = false;
+    local Aimbot_ShootAt = "Head";
 
 		--Enabled
     local Aimbot_EnabledToggle = Aimbot_Window:AddSwitch("Enabled", function(bool)
