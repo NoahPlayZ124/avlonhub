@@ -1,4 +1,4 @@
-if Drawing then
+if Drawing and getgc then
 	--[[
 		ui-engine-v2
 		version 1.3a
@@ -2974,5 +2974,5 @@ if Drawing then
 		end
 	end)
 else
-	game.Players.LocalPlayer:Kick("Your exploit does not have a Drawing API!")
+	game.Players.LocalPlayer:Kick("Your exploit does not have a Drawing API or getgc!")
 end
