@@ -1,4 +1,4 @@
-if Drawing and getgc then
+if Drawing and getgc and writefile and readfile then
 	--[[
 		ui-engine-v2
 		version 1.3a
@@ -3071,5 +3071,5 @@ if Drawing and getgc then
 		end
 	end)
 else
-	game.Players.LocalPlayer:Kick("Your exploit does not have a Drawing API or getgc!")
+	game.Players.LocalPlayer:Kick("Your exploit does not support all the functions this script needs!")
 end
