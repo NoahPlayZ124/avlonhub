@@ -2031,14 +2031,15 @@ if Drawing and getgc and writefile and readfile then
 			chams = false,
 			tracers = false,
 			chamstransparency = 30,
-			visualscolor = Color3.new(1, 0, 0),
+			visualscolor = {1, 0, 0},
 			visualsrainbow = true
 		},
 		aimbot = {
 			enabled = false,
 			wallcheck = false,
 			aimat = "Head",
-			aimatrandom = false
+			aimatrandom = false,
+			autoshoot = false
 		},
 		mods1 = {
 			norecoil = false,
@@ -2140,9 +2141,11 @@ if Drawing and getgc and writefile and readfile then
 
 
     local ESP_ColorPicker = ESP_Window:AddColorPicker(function(color)
-		Main_Settings.visuals.visualscolor = color
-	end)
-    ESP_ColorPicker:Set(Main_Settings.visuals.visualscolor)
+        local hue, saturation, value = color:ToHSV()
+        Main_Settings.visuals.visualscolor = {hue, saturation, value}
+    end)
+    print(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    ESP_ColorPicker:Set(Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3]))
 	
 	local ESP_HA = ESP_Window:AddHorizontalAlignment()
 	ESP_HA:AddButton("Rainbow", function()
@@ -2156,13 +2159,16 @@ if Drawing and getgc and writefile and readfile then
 	ESP_HA:AddButton("Reset", function()
 		Main_Settings.visuals.rainbow = false
 		ESP_ColorPicker:Set(Color3.new(1, 0, 0))
-		Main_Settings.visuals.visualscolor = Color3.new(1, 0, 0)
+		
+		local hue, saturation, value = Color3.new(1, 0, 0):ToHSV()
+		Main_Settings.visuals.visualscolor = {hue, saturation, value}
 	end)
 	
 	library:FormatWindows()
 	
 
 	local allTracers = { }
+	
 	function TracerExists(element)
 		for _, value in pairs(allTracers) do
 			if value.AssignedTo == element then
@@ -2214,7 +2220,7 @@ if Drawing and getgc and writefile and readfile then
 								if Main_Settings.visuals.rainbow then
 									v2.value.Color = rainbowcolor
 								else
-									v2.value.Color = Main_Settings.visuals.visualscolor
+									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 								end
 							end
 						end
@@ -2230,7 +2236,7 @@ if Drawing and getgc and writefile and readfile then
 							if Main_Settings.visuals.rainbow then
 								Line.Color = rainbowcolor
 							else
-								Line.Color = Main_Settings.visuals.visualscolor
+								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 							end
 							Line.Thickness = 1
 							Line.Transparency = 1
@@ -2271,10 +2277,10 @@ if Drawing and getgc and writefile and readfile then
 						f3.BackgroundColor3 = rainbowcolor
 						f4.BackgroundColor3 = rainbowcolor
 					else
-						f1.BackgroundColor3 = Main_Settings.visuals.visualscolor
-						f2.BackgroundColor3 = Main_Settings.visuals.visualscolor
-						f3.BackgroundColor3 = Main_Settings.visuals.visualscolor
-						f4.BackgroundColor3 = Main_Settings.visuals.visualscolor
+						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 					end
 					f1.Size = UDim2.new(0, 1, 1, 0)
 					f2.Size = UDim2.new(0, 1, 1, 0)
@@ -2305,7 +2311,7 @@ if Drawing and getgc and writefile and readfile then
 								if esp_rainbow then
 									adornment.Color3 = rainbowcolor
 								else
-									adornment.Color3 = Main_Settings.visuals.visualscolor
+									adornment.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 								end
 							elseif v2:FindFirstChild("BoxHandleAdornment") then
 								local c = v2:FindFirstChild("BoxHandleAdornment")
@@ -2314,7 +2320,7 @@ if Drawing and getgc and writefile and readfile then
 								if esp_rainbow then
 									c.Color3 = rainbowcolor
 								else
-									c.Color3 = Main_Settings.visuals.visualscolor
+									c.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 								end
 							end
 						end)
@@ -2418,6 +2424,12 @@ if Drawing and getgc and writefile and readfile then
         Main_Settings.aimbot.wallcheck = bool
     end)
     Aimbot_WallcheckToggle:Set(Main_Settings.aimbot.wallcheck)
+    
+        --AutoShoot
+    local Aimbot_AutoShootToggle = Aimbot_Window:AddSwitch("Auto Shoot", function(bool)
+        Main_Settings.aimbot.autoshoot = bool
+    end)
+    Aimbot_AutoShootToggle:Set(Main_Settings.aimbot.autoshoot)
 
         --AimAt
     local Aimbot_AimAtDropdown = Aimbot_Window:AddDropdown("Aim At", function(object)
@@ -2534,6 +2546,21 @@ if Drawing and getgc and writefile and readfile then
                 end
             end
         end
+    end)
+    
+    game:GetService('RunService').Heartbeat:Connect(function()
+        if Main_Settings.aimbot.autoshoot then
+        	local Target = game.Players.LocalPlayer:GetMouse().Target
+        	local plrteam = Target.Parent.Parent.Name
+        	
+        	if Target.Name == "Head" or Target.Name == "Torso" or Target.Name == "Left Leg" or Target.Name == "Right Leg" or Target.Name == "Left Arm" or Target.Name == "Right Arm" then
+            	if (plrteam == "Ghosts" or plrteam == "Phantoms") and plrteam ~= game.Players.LocalPlayer.Team.Name then
+                    mouse1press()
+            		wait()
+            		mouse1release()
+            	end
+        	end
+    	end
     end)
 
 	--///////////////////////////////////////////////////////////////////////--
