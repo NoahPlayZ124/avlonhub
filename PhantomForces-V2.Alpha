@@ -17,6 +17,23 @@ if Drawing and getgc and writefile and readfile then
 		if imgui then imgui:Destroy() end
 	end
 	
+	local CurrentTexts = { }
+    local function WriteToConsole(message)
+    	local Msg = game.ReplicatedStorage.Misc.Msger
+    	local Message = Msg:Clone()
+    	local MTag = Message.Tag
+    	local Offset = 5
+    	Message.Parent = game.Players.LocalPlayer.PlayerGui.ChatGame.GlobalChat
+    	Message.Text = "AvlonHub "
+    	Message.TextColor3 = Color3.new(0, 0.6, 1)
+    	table.insert(CurrentTexts, Message)
+    	Message.Msg.Text = message
+    	Message.Msg.Position = UDim2.new(0, Message.TextBounds.x, 0, 0)
+    	Message.Msg.TextColor3 = Color.fromRGB(200, 200, 200)
+    	Message.Visible = true
+    	Message.Msg.Visible = true
+    end
+	
 	local imgui = Instance.new("ScreenGui")
 	local Prefabs = Instance.new("Frame")
 	local Label = Instance.new("TextLabel")
@@ -2035,7 +2052,7 @@ if Drawing and getgc and writefile and readfile then
 			boxesp = false,
 			chams = false,
 			tracers = false,
-			chamstransparency = 30,
+			transparency = 30,
 			visualscolor = {1, 0, 0},
 			visualsrainbow = true
 		},
@@ -2090,9 +2107,6 @@ if Drawing and getgc and writefile and readfile then
 	--///////////////////////////////////////////////////////////////////////--
 	--                                 ESP                                   --
 	--///////////////////////////////////////////////////////////////////////--
-
-    local visuals_chamstransparency
-
 	
 	function zigzag(X) return math.acos(math.cos(X*math.pi))/math.pi end
 	local counter = 0
@@ -2122,26 +2136,28 @@ if Drawing and getgc and writefile and readfile then
 	end)
 	ESP_TracersToggle:Set(Main_Settings.visuals.tracers)
 
+    local visuals_transparency
+
     local Transparencyfix = false
-    local ESP_ChamsTransparency = ESP_Window:AddSlider("Chams Transparency", function(trans)
+    local ESP_Transparency = ESP_Window:AddSlider("Transparency", function(trans)
         local num
         if trans == 100 then
             num = tonumber(1.0)
         else
             num = tonumber("0." .. string.sub(trans, 1, 1) .. string.sub(trans, 2, 2))
         end
-        if Transparencyfix ~= true then
-            visuals_chamstransparency = num
+        if num ~= 0 then
+            visuals_transparency = num
         end
         if trans ~= 0 then
-            Main_Settings.visuals.chamstransparency = trans
+            Main_Settings.visuals.transparency = trans
         end
 	end, { 
 		["min"] = 0, 
 		["max"] = 100, 
 		["readonly"] = false,
     })
-    ESP_ChamsTransparency:Set(Main_Settings.visuals.chamstransparency)
+    ESP_Transparency:Set(Main_Settings.visuals.transparency)
     Transparencyfix = true
 
 
@@ -2221,6 +2237,7 @@ if Drawing and getgc and writefile and readfile then
 							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
 							if onScreen then
 								v2.value.To = Vector2.new(vector.X, vector.Y)
+								v2.value.Transparency = math.acos(visuals_transparency) - 0.50
 								if Main_Settings.visuals.rainbow then
 									v2.value.Color = rainbowcolor
 								else
@@ -2243,7 +2260,7 @@ if Drawing and getgc and writefile and readfile then
 								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 							end
 							Line.Thickness = 1
-							Line.Transparency = 1
+							Line.Transparency = math.acos(visuals_transparency) - 0.50
 
 							local _Line = { value = Line, AssignedTo = v }
 							table.insert(allTracers, _Line)
@@ -2286,6 +2303,10 @@ if Drawing and getgc and writefile and readfile then
 						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 					end
+					f1.Transparency = visuals_transparency
+					f2.Transparency = visuals_transparency
+					f3.Transparency = visuals_transparency
+					f4.Transparency = visuals_transparency
 					f1.Size = UDim2.new(0, 1, 1, 0)
 					f2.Size = UDim2.new(0, 1, 1, 0)
 					f3.Size = UDim2.new(1, 0, 0, 1)
@@ -2308,7 +2329,7 @@ if Drawing and getgc and writefile and readfile then
 							if (v2:IsA("BasePart") or (v2:IsA("Model") and v2:FindFirstChild("Slot1"))) and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
 								local adornment = Instance.new("BoxHandleAdornment", v2)
 								adornment.AlwaysOnTop = true
-								adornment.Transparency = visuals_chamstransparency
+								adornment.Transparency = visuals_transparency
 								adornment.Adornee = v2
 								adornment.ZIndex = 5
 								adornment.Size = v2.Size
@@ -2320,7 +2341,7 @@ if Drawing and getgc and writefile and readfile then
 							elseif v2:FindFirstChild("BoxHandleAdornment") then
 								local c = v2:FindFirstChild("BoxHandleAdornment")
                                 c.Size = v2.Size
-                                c.Transparency = visuals_chamstransparency
+                                c.Transparency = visuals_transparency
 								if esp_rainbow then
 									c.Color3 = rainbowcolor
 								else
@@ -2937,7 +2958,6 @@ if Drawing and getgc and writefile and readfile then
 	end
 	end)
 	
-	
 	--///////////////////////////////////////////////////////////////////////--
 	--                                Other                                  --
 	--///////////////////////////////////////////////////////////////////////--
@@ -3007,7 +3027,7 @@ if Drawing and getgc and writefile and readfile then
 		--Save Settings
 	local Other_SaveSettingsButton = Other_Window:AddButton("Save Current Settings", function()
         saveSettings()
-        print("Saved Settings")
+        WriteToConsole("Saved Settings")
         game.StarterGui:SetCore("SendNotification", {
             Title = "Avlon Hub",
             Text = "Saved Settings",
@@ -3103,6 +3123,8 @@ if Drawing and getgc and writefile and readfile then
 			end
 		end
 	end)
+	
+	WriteToConsole("Loaded")
 else
 	game.Players.LocalPlayer:Kick("Your exploit does not support all the functions this script needs!")
 end
