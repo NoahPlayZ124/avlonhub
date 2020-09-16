@@ -2023,7 +2023,7 @@ if Drawing and getgc then
 		return window_data, Window
 	end
 	
-	local Window = library:AddWindow("AvlonHub (Phantom Forces)", {
+	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
 		main_color = Color3.fromRGB(41, 74, 122),
 		min_size = Vector2.new(500, 328),
 		toggle_key = Enum.KeyCode.RightShift,
