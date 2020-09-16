@@ -1,7 +1,7 @@
 print("Loading AvlonHub!")
 if game.PlaceId == 292439477 then
-  if _G.V2PF == true then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/PFv2(unstable).lua", true))()
+  if _G.V2_Alpha == true then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/PhantomForces-V2.Alpha", true))()
   else
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
   end
