@@ -1512,6 +1512,11 @@ if Drawing and getgc and writefile and readfile then
 	
 								return object, object_data
 							end
+
+							function dropdown_data:Set(n)
+								dropdown.Text = "      [ " .. n .. " ]"
+								pcall(callback, n)
+							end
 	
 							return dropdown_data, dropdown
 						end
@@ -2144,7 +2149,6 @@ if Drawing and getgc and writefile and readfile then
         local hue, saturation, value = color:ToHSV()
         Main_Settings.visuals.visualscolor = {hue, saturation, value}
     end)
-    print(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
     ESP_ColorPicker:Set(Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3]))
 	
 	local ESP_HA = ESP_Window:AddHorizontalAlignment()
@@ -2442,14 +2446,15 @@ if Drawing and getgc and writefile and readfile then
         elseif tostring(object) == "Random" then
 	        Main_Settings.aimbot.aimat = ""
 			Main_Settings.aimbot.aimatrandom = true
-		end
+        end
     end)
     Aimbot_AimAtDropdown:Add("Head")
 	Aimbot_AimAtDropdown:Add("Torso")
 	Aimbot_AimAtDropdown:Add("Random")
+	if Main_Settings.aimbot.aimatrandom then Aimbot_AimAtDropdown:Set("Random") else Aimbot_AimAtDropdown:Set(Main_Settings.aimbot.aimat) end
 
 	Aimbot_Window:AddLabel(" ")
-
+    
 	local Aimbot_OtherFolder = Aimbot_Window:AddFolder("Other")
 	local Aimbot_SilentAim = Aimbot_OtherFolder:AddButton("Silent Aim", function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/rarescripts/master/pfsilentaim"))()
