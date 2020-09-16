@@ -2427,7 +2427,8 @@ if Drawing and getgc and writefile and readfile then
         elseif tostring(object) == "Torso" then
 			Main_Settings.aimbot.aimat = "Torso"
 			Main_Settings.aimbot.aimatrandom = false
-		elseif tostring(object) == "Random" then
+        elseif tostring(object) == "Random" then
+	        Main_Settings.aimbot.aimat = ""
 			Main_Settings.aimbot.aimatrandom = true
 		end
     end)
@@ -2502,7 +2503,7 @@ if Drawing and getgc and writefile and readfile then
     
 	MOUSE.Button2Down:connect(function(KEY)
 		Aimbot_ENABLED = true
-		if Aimbot_ShootAtRandom then
+		if Main_Settings.aimbot.aimatrandom then
 			local number = math.random(1, 5)
 			if number == 1 or number == 2 or number == 3 or number == 4 then
 				Main_Settings.aimbot.aimat = "Torso"
