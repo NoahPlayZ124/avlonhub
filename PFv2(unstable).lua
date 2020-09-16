@@ -2124,7 +2124,7 @@ if Drawing and getgc and writefile and readfile then
         else
             num = tonumber("0." .. string.sub(trans, 1, 1) .. string.sub(trans, 2, 2))
         end
-        if Transparencyfix ~= false then
+        if Transparencyfix ~= true then
             visuals_chamstransparency = num
         end
         if trans ~= 0 then
