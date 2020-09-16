@@ -2077,7 +2077,7 @@ if Drawing and getgc and writefile and readfile then
 	    writefile(game.PlaceId .. ".avlonhub", game:GetService("HttpService"):JSONEncode(Main_Settings))
 	end
 	
-	local Window = library:AddWindow("AvlonHub (Phantom Forces)", {
+	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
 		main_color = Color3.fromRGB(41, 74, 122),
 		min_size = Vector2.new(500, 328),
 		toggle_key = Enum.KeyCode.RightShift,
