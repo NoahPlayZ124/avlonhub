@@ -18,7 +18,8 @@ if Drawing and getgc and writefile and readfile then
 	end
 	
 	local CurrentTexts = { }
-    local function WriteToConsole(message)
+	
+    	local function WriteToConsole(message)
     	local Msg = game.ReplicatedStorage.Misc.Msger
     	local Message = Msg:Clone()
     	local MTag = Message.Tag
