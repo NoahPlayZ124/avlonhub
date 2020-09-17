@@ -18,8 +18,7 @@ if Drawing and getgc and writefile and readfile then
 	end
 	
 	local CurrentTexts = { }
-	
-    	local function WriteToConsole(message)
+    local function WriteToConsole(message)
     	local Msg = game.ReplicatedStorage.Misc.Msger
     	local Message = Msg:Clone()
     	local MTag = Message.Tag
@@ -33,6 +32,19 @@ if Drawing and getgc and writefile and readfile then
     	Message.Msg.TextColor3 = Color.fromRGB(200, 200, 200)
     	Message.Visible = true
     	Message.Msg.Visible = true
+    end
+    
+    local functions = {
+        getbodyparts,
+        tables = {
+            crosshairlines = { }
+        }
+    }
+    
+    for i,v in next, getgc(true) do
+        if type(v) == "table" and rawget(v,'getbodyparts') then
+            functions.getbodyparts = v.getbodyparts;
+        end
     end
 	
 	local imgui = Instance.new("ScreenGui")
@@ -2051,8 +2063,10 @@ if Drawing and getgc and writefile and readfile then
 		visuals = {
 			enabled = false,
 			boxesp = false,
+			nameesp = false,
 			chams = false,
 			tracers = false,
+			crosshair = false,
 			transparency = 30,
 			visualscolor = {1, 0, 0},
 			visualsrainbow = true
@@ -2097,7 +2111,7 @@ if Drawing and getgc and writefile and readfile then
 	
 	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
 		main_color = Color3.fromRGB(41, 74, 122),
-		min_size = Vector2.new(500, 328),
+		min_size = Vector2.new(500, 400),
 		toggle_key = Enum.KeyCode.RightShift,
 		can_resize = false,
 	})
@@ -2127,6 +2141,11 @@ if Drawing and getgc and writefile and readfile then
 	end)
 	ESP_BoxESPToggle:Set(Main_Settings.visuals.boxesp)
 	
+	local ESP_NameESPToggle = ESP_Window:AddSwitch("Name ESP", function(bool)
+		Main_Settings.visuals.nameesp = bool
+	end)
+	ESP_NameESPToggle:Set(Main_Settings.visuals.nameesp)
+	
 	local ESP_ChamsToggle = ESP_Window:AddSwitch("Chams", function(bool)
 		Main_Settings.visuals.chams = bool
 	end)
@@ -2136,6 +2155,11 @@ if Drawing and getgc and writefile and readfile then
 		Main_Settings.visuals.tracers = bool
 	end)
 	ESP_TracersToggle:Set(Main_Settings.visuals.tracers)
+	
+	local ESP_CrosshairToggle = ESP_Window:AddSwitch("Crosshair", function(bool)
+		Main_Settings.visuals.crosshair = bool
+	end)
+	ESP_CrosshairToggle:Set(Main_Settings.visuals.crosshair)
 
     local visuals_transparency
 
@@ -2187,6 +2211,19 @@ if Drawing and getgc and writefile and readfile then
 	
 	library:FormatWindows()
 	
+    local CrossLine1 = Drawing.new("Line")
+    CrossLine1.Visible = false
+    CrossLine1.From = Vector2.new((workspace.CurrentCamera.ViewportSize.X / 2) - 12, workspace.CurrentCamera.ViewportSize.Y / 2)
+    CrossLine1.To = Vector2.new((workspace.CurrentCamera.ViewportSize.X / 2) + 12, workspace.CurrentCamera.ViewportSize.Y / 2)
+    CrossLine1.Thickness = 1
+    CrossLine1.Transparency = 1
+    
+    local CrossLine2 = Drawing.new("Line")
+    CrossLine2.Visible = false
+    CrossLine2.From = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, (workspace.CurrentCamera.ViewportSize.Y / 2) - 12)
+    CrossLine2.To = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, (workspace.CurrentCamera.ViewportSize.Y / 2) + 12)
+    CrossLine2.Thickness = 1
+    CrossLine2.Transparency = 1
 
 	local allTracers = { }
 	
@@ -2232,42 +2269,100 @@ if Drawing and getgc and writefile and readfile then
 					end
 				end
 
-				for i,v in pairs(otherteam:GetChildren()) do
-					for i2,v2 in pairs(allTracers) do
-						if v2.AssignedTo == v then
-							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
-							if onScreen then
-								v2.value.To = Vector2.new(vector.X, vector.Y)
-								v2.value.Transparency = math.acos(visuals_transparency) - 0.50
-								if Main_Settings.visuals.rainbow then
-									v2.value.Color = rainbowcolor
-								else
-									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-								end
-							end
-						end
-					end
-
-					if TracerExists(v) == false then
-						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
-						if onScreen then
-							local Line = Drawing.new("Line")
-							Line.Visible = true
-							Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
-							Line.To = Vector2.new(vector.X, vector.Y)
-							if Main_Settings.visuals.rainbow then
-								Line.Color = rainbowcolor
-							else
-								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-							end
-							Line.Thickness = 1
-							Line.Transparency = math.acos(visuals_transparency) - 0.50
-
-							local _Line = { value = Line, AssignedTo = v }
-							table.insert(allTracers, _Line)
-						end
+				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+    				if v.Team ~= game.Players.LocalPlayer.Team and functions.getbodyparts(v) then
+    				    for i2,v2 in pairs(allTracers) do
+    						if v2.AssignedTo == functions.getbodyparts(v).char then
+    							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(functions.getbodyparts(v).char.Torso.CFrame * CFrame.new(0, functions.getbodyparts(v).char.Torso.Size.Y, 0).p);
+    							if onScreen then
+    								v2.value.To = Vector2.new(vector.X, vector.Y)
+    								v2.value.Transparency = math.acos(visuals_transparency) - 0.50
+    								if Main_Settings.visuals.rainbow then
+    									v2.value.Color = rainbowcolor
+    								else
+    									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    								end
+    							end
+    						end
+    				    end
+					
+    					if TracerExists(functions.getbodyparts(v).char) == false then
+    						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(functions.getbodyparts(v).char.Torso.CFrame * CFrame.new(0, functions.getbodyparts(v).char.Torso.Size.Y, 0).p);
+    						if onScreen then
+    							local Line = Drawing.new("Line")
+    							Line.Visible = true
+    							Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
+    							Line.To = Vector2.new(vector.X, vector.Y)
+    							if Main_Settings.visuals.rainbow then
+    								Line.Color = rainbowcolor
+    							else
+    								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    							end
+    							Line.Thickness = 1
+    							Line.Transparency = math.acos(visuals_transparency) - 0.50
+    
+    							local _Line = { value = Line, AssignedTo = functions.getbodyparts(v).char }
+    							table.insert(allTracers, _Line)
+    						end
+					    end
+    				end
+			    end
+			end
+		    
+		    --Name ESP
+			if Main_Settings.visuals.nameesp then
+				for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+					if v.Name == "nameE" then 
+						v:Destroy() 
+					end 
+				end
+				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				    if v.Team ~= game.Players.LocalPlayer.Team and functions.getbodyparts(v) then
+    					local playerchar = functions.getbodyparts(v).char
+    					local billboard = Instance.new("BillboardGui")
+    					billboard.Name = "nameE"
+    					billboard.AlwaysOnTop = true
+    					billboard.Size = UDim2.new(15,0,1,0)
+    					billboard.StudsOffset = Vector3.new(0,5,0)
+    					billboard.Adornee = playerchar.Torso
+    					billboard.Parent = game.CoreGui
+    					
+    					local Label = Instance.new('TextLabel')
+                        Label.BackgroundTransparency = 1
+                        Label.Size = UDim2.new(1,0,1,0)
+    					if Main_Settings.visuals.rainbow then
+    						Label.TextColor3 = rainbowcolor
+    					else
+    						Label.TextColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    					end
+                        Label.TextStrokeColor3 = Color3.fromRGB(27,42,53)
+                        Label.Font = 'SourceSans'
+                        Label.TextStrokeTransparency = .6
+                        Label.TextScaled = true
+                        Label.Text = v.Name
+                        Label.Parent = billboard
 					end
 				end
+			end
+			
+			--Name ESP
+			if Main_Settings.visuals.crosshair then
+                CrossLine1.Visible = true
+                CrossLine2.Visible = true
+                
+                if Main_Settings.visuals.rainbow then
+            		CrossLine2.Color = rainbowcolor
+            	else
+            		CrossLine2.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+            	end
+            	if Main_Settings.visuals.rainbow then
+            		CrossLine1.Color = rainbowcolor
+            	else
+            		CrossLine1.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+            	end
+			else
+                CrossLine1.Visible = false
+                CrossLine2.Visible = false
 			end
 		    
 			--ESP
@@ -2277,50 +2372,51 @@ if Drawing and getgc and writefile and readfile then
 						v:Destroy() 
 					end 
 				end
-				for i,v in pairs(otherteam:GetChildren()) do
-					local billboard = Instance.new("BillboardGui")
-					billboard.Name = "E"
-					billboard.AlwaysOnTop = true
-					billboard.Size = UDim2.new(4, 0, 5.5, 0)
-					billboard.StudsOffset = Vector3.new(0, 0, 0)
-					billboard.Adornee = v.Torso
-					billboard.Parent = game.CoreGui
-					local f1 = Instance.new("Frame", billboard)
-					local f2 = Instance.new("Frame", billboard)
-					local f3 = Instance.new("Frame", billboard)
-					local f4 = Instance.new("Frame", billboard)
-					f1.BorderSizePixel = 0
-					f2.BorderSizePixel = 0
-					f3.BorderSizePixel = 0
-					f4.BorderSizePixel = 0
-					if esp_rainbow then
-						f1.BackgroundColor3 = rainbowcolor
-						f2.BackgroundColor3 = rainbowcolor
-						f3.BackgroundColor3 = rainbowcolor
-						f4.BackgroundColor3 = rainbowcolor
-					else
-						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				    if v.Team ~= game.Players.LocalPlayer.Team and functions.getbodyparts(v) then
+    					local playerchar = functions.getbodyparts(v).char
+    					local billboard = Instance.new("BillboardGui")
+    					billboard.Name = "E"
+    					billboard.AlwaysOnTop = true
+    					billboard.Size = UDim2.new(4, 0, 5.5, 0)
+    					billboard.StudsOffset = Vector3.new(0, 0, 0)
+    					billboard.Adornee = playerchar.Torso
+    					billboard.Parent = game.CoreGui
+    					local f1 = Instance.new("Frame", billboard)
+    					local f2 = Instance.new("Frame", billboard)
+    					local f3 = Instance.new("Frame", billboard)
+    					local f4 = Instance.new("Frame", billboard)
+    					f1.BorderSizePixel = 0
+    					f2.BorderSizePixel = 0
+    					f3.BorderSizePixel = 0
+    					f4.BorderSizePixel = 0
+    					if Main_Settings.visuals.rainbow then
+    						f1.BackgroundColor3 = rainbowcolor
+    						f2.BackgroundColor3 = rainbowcolor
+    						f3.BackgroundColor3 = rainbowcolor
+    						f4.BackgroundColor3 = rainbowcolor
+    					else
+    						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+    					end
+    					f1.Transparency = visuals_transparency
+    					f2.Transparency = visuals_transparency
+    					f3.Transparency = visuals_transparency
+    					f4.Transparency = visuals_transparency
+    					f1.Size = UDim2.new(0, 1, 1, 0)
+    					f2.Size = UDim2.new(0, 1, 1, 0)
+    					f3.Size = UDim2.new(1, 0, 0, 1)
+    					f4.Size = UDim2.new(1, 0, 0, 1)
+    					f1.Position = UDim2.new(0, 0, 0, 0)
+    					f2.Position = UDim2.new(1, -1, 0, 0)
+    					f3.Position = UDim2.new(0, 0, 0, 0)
+    					f4.Position = UDim2.new(0, 0, 1, -1)
+    					f4.Name = "Bottom"
 					end
-					f1.Transparency = visuals_transparency
-					f2.Transparency = visuals_transparency
-					f3.Transparency = visuals_transparency
-					f4.Transparency = visuals_transparency
-					f1.Size = UDim2.new(0, 1, 1, 0)
-					f2.Size = UDim2.new(0, 1, 1, 0)
-					f3.Size = UDim2.new(1, 0, 0, 1)
-					f4.Size = UDim2.new(1, 0, 0, 1)
-					f1.Position = UDim2.new(0, 0, 0, 0)
-					f2.Position = UDim2.new(1, -1, 0, 0)
-					f3.Position = UDim2.new(0, 0, 0, 0)
-					f4.Position = UDim2.new(0, 0, 1, -1)
-					f4.Name = "Bottom"
 				end
 			end
-	
-	
 	
 			--Chams
 			if Main_Settings.visuals.chams then
@@ -2334,7 +2430,7 @@ if Drawing and getgc and writefile and readfile then
 								adornment.Adornee = v2
 								adornment.ZIndex = 5
 								adornment.Size = v2.Size
-								if esp_rainbow then
+								if Main_Settings.visuals.rainbow then
 									adornment.Color3 = rainbowcolor
 								else
 									adornment.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
@@ -2343,7 +2439,7 @@ if Drawing and getgc and writefile and readfile then
 								local c = v2:FindFirstChild("BoxHandleAdornment")
                                 c.Size = v2.Size
                                 c.Transparency = visuals_transparency
-								if esp_rainbow then
+								if Main_Settings.visuals.rainbow then
 									c.Color3 = rainbowcolor
 								else
 									c.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
@@ -2366,8 +2462,11 @@ if Drawing and getgc and writefile and readfile then
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
+				if v.Name == "nameE" then
+				    v:Destroy()
+				end
 			end
-			for i,v in pairs(otherteam:GetChildren()) do
+            for i,v in pairs(otherteam:GetChildren()) do
 				for i2,v2 in pairs(v:GetChildren()) do
 					if v2:FindFirstChild("BoxHandleAdornment") then
 						v2:FindFirstChild("BoxHandleAdornment"):Remove()
@@ -2381,6 +2480,7 @@ if Drawing and getgc and writefile and readfile then
 					end
 				end
 			end
+
 			for i,v in pairs(allTracers) do
 				pcall(function()
 					v.value:Remove();
@@ -2394,6 +2494,14 @@ if Drawing and getgc and writefile and readfile then
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
+			end
+		end
+		
+		if Main_Settings.visuals.nameesp == false then
+			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				if v.Name == "nameE" then
+				    v:Destroy()
+				end
 			end
 		end
 
@@ -2738,7 +2846,7 @@ if Drawing and getgc and writefile and readfile then
 	Mods_NoSpreadToggle:Set(Main_Settings.mods1.nospread)
 	
 		--Rapid Fire
-	local Mods_RapidFireToggle = Mods_Window:AddSwitch("Rapid Fire", function(bool)
+	local Mods_RapidFireToggle = Mods_Window:AddSwitch("Fast Bullets", function(bool)
 	    Main_Settings.mods1.rapidfire = bool
 		if bool then
 			for i,v in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
