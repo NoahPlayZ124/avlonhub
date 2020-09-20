@@ -1,6 +1,10 @@
 print("Loading AvlonHub!")
 if game.PlaceId == 292439477 then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
+    if syn then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
+    else
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/pfold.lua", true))()
+    end
 --elseif game.PlaceId == 286090429 then
   --loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/arsenal.lua", true))()
 else
