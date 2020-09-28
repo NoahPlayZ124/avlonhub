@@ -2713,9 +2713,9 @@ if Drawing and getgc and writefile and readfile then
 		Aimbot_ENABLED = true
 		if Main_Settings.aimbot.aimatrandom then
 			local number = math.random(1, 5)
-			if number == 1 or number == 2 or number == 3 or number == 4 then
+			if number == 1 or number == 2 or number == 3 then
 				Main_Settings.aimbot.aimat = "Torso"
-			elseif number == 5 then
+			elseif number == 4 or number == 5 then
 				Main_Settings.aimbot.aimat = "Head"
 			end
 		end
