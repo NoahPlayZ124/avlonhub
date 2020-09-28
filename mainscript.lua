@@ -1,6 +1,6 @@
 print("Loading AvlonHub!")
 if game.PlaceId == 292439477 then
-    if syn then
+    if syn or issentinelclosure then
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
     else
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/pfold.lua", true))()
