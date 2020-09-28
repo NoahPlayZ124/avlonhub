@@ -29,7 +29,6 @@ if Drawing and getgc and writefile and readfile then
     	table.insert(CurrentTexts, Message)
     	Message.Msg.Text = message
     	Message.Msg.Position = UDim2.new(0, Message.TextBounds.x, 0, 0)
-    	Message.Msg.TextColor3 = Color.fromRGB(200, 200, 200)
     	Message.Visible = true
     	Message.Msg.Visible = true
     end
@@ -2098,7 +2097,18 @@ if Drawing and getgc and writefile and readfile then
 		}
 	}
 	
-	if isfile(game.PlaceId .. ".avlonhub") then
+	local fileexist = false
+	if issentinelclosure then
+		pcall(function()
+			if readfile(game.PlaceId .. ".avlonhub") then
+				fileexist = true
+			end
+		end)
+	elseif isfile then
+		fileexist = isfile(game.PlaceId .. ".avlonhub")
+	end
+	
+	if fileexist then
 	    Main_Settings = game:GetService("HttpService"):JSONDecode(readfile(game.PlaceId .. ".avlonhub"))
 	else
 	    writefile(game.PlaceId .. ".avlonhub", game:GetService("HttpService"):JSONEncode(Main_Settings))
