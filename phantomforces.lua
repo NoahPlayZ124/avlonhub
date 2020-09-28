@@ -2106,6 +2106,8 @@ if Drawing and getgc and writefile and readfile then
 		end)
 	elseif isfile then
 		fileexist = isfile(game.PlaceId .. ".avlonhub")
+	else
+		game.Players.LocalPlayer:Kick("Exploit not supported!")
 	end
 	
 	if fileexist then
