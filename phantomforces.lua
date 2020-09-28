@@ -2098,14 +2098,14 @@ if Drawing and getgc and writefile and readfile then
 	}
 	
 	local fileexist = false
-	if issentinelclosure then
+	if isfile then
+		fileexist = isfile(game.PlaceId .. ".avlonhub")
+	elseif readfile then
 		pcall(function()
 			if readfile(game.PlaceId .. ".avlonhub") then
 				fileexist = true
 			end
 		end)
-	elseif isfile then
-		fileexist = isfile(game.PlaceId .. ".avlonhub")
 	else
 		game.Players.LocalPlayer:Kick("Exploit not supported!")
 	end
