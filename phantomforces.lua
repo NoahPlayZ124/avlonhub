@@ -2120,18 +2120,20 @@ if Drawing and getgc and writefile and readfile then
 	    writefile(game.PlaceId .. ".avlonhub", game:GetService("HttpService"):JSONEncode(Main_Settings))
 	end
 	
+	local playerstable for i,v in pairs(game:GetChildren()) do if string.find(v.Name, "Players") then playerstable = v end end
+	local player = playerstable.LocalPlayer local playersteam = player.Team.Name 
+	
+	local backupModules = game:GetService("ReplicatedStorage").GunModules:Clone()
+	backupModules.Name = "backupGunModules"
+	backupModules.Parent = game:GetService("ReplicatedStorage")
+
 	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
 		main_color = Color3.fromRGB(41, 74, 122),
 		min_size = Vector2.new(500, 400),
 		toggle_key = Enum.KeyCode.RightShift,
 		can_resize = false,
 	})
-	
-	wait(0.4)
-	
-	local playerstable for i,v in pairs(game:GetChildren()) do if string.find(v.Name, "Players") then playerstable = v end end
-	local player = playerstable.LocalPlayer local playersteam = player.Team.Name 
-	
+
 	--///////////////////////////////////////////////////////////////////////--
 	--                                 ESP                                   --
 	--///////////////////////////////////////////////////////////////////////--
@@ -2794,10 +2796,6 @@ if Drawing and getgc and writefile and readfile then
 		   end
 	   end
 	end
-	
-	local backupModules = game:GetService("ReplicatedStorage").GunModules:Clone()
-	backupModules.Name = "backupGunModules"
-	backupModules.Parent = game:GetService("ReplicatedStorage")
 	
 	local Mods_Window = Window:AddTab("Mods")
 	
