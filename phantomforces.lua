@@ -2127,6 +2127,8 @@ if Drawing and getgc and writefile and readfile then
 		can_resize = false,
 	})
 	
+	wait(0.4)
+	
 	local playerstable for i,v in pairs(game:GetChildren()) do if string.find(v.Name, "Players") then playerstable = v end end
 	local player = playerstable.LocalPlayer local playersteam = player.Team.Name 
 	
