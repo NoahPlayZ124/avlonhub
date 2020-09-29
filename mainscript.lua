@@ -1,6 +1,6 @@
 print("Loading AvlonHub!")
 if game.PlaceId == 292439477 then
-    if readfile and writefile and getgc and Drawing and mouse1press and mousemoverel and mouse1press and mouse1release then
+    if readfile and writefile and getgc and Drawing and mouse1press and mousemoverel then
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
     else
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/pfold.lua", true))()
