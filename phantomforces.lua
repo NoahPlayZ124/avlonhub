@@ -2107,7 +2107,7 @@ if Drawing and getgc and writefile and readfile then
 			end
 		end)
 	else
-		game.Players.LocalPlayer:Kick("Exploit not supported!")
+		playerstable.LocalPlayer:Kick("Exploit not supported!")
 	end
 	
 	if fileexist then
@@ -2121,7 +2121,8 @@ if Drawing and getgc and writefile and readfile then
 	end
 	
 	local playerstable for i,v in pairs(game:GetChildren()) do if string.find(v.Name, "Players") then playerstable = v end end
-	local player = playerstable.LocalPlayer local playersteam = player.Team.Name 
+	local player = playerstable.LocalPlayer 
+	local playersteam = player.Team.Name 
 	
 	local backupModules = game:GetService("ReplicatedStorage").GunModules:Clone()
 	backupModules.Name = "backupGunModules"
@@ -2305,7 +2306,7 @@ if Drawing and getgc and writefile and readfile then
 				end
 
 				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-    				if v.Team ~= game.Players.LocalPlayer.Team and getbodyparts(v) ~= nil then
+    				if v.Team ~= player.Team and getbodyparts(v) ~= nil then
     				    for i2,v2 in pairs(allTracers) do
     						if v2.AssignedTo == getbodyparts(v).char then
     							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(getbodyparts(v).char.Torso.CFrame * CFrame.new(0, getbodyparts(v).char.Torso.Size.Y, 0).p);
@@ -2352,7 +2353,7 @@ if Drawing and getgc and writefile and readfile then
 					end 
 				end
 				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-				    if v.Team ~= game.Players.LocalPlayer.Team and getbodyparts(v) then
+				    if v.Team ~= player.Team and getbodyparts(v) then
     					local playerchar = getbodyparts(v).char
     					local billboard = Instance.new("BillboardGui")
     					billboard.Name = "nameE"
@@ -2408,7 +2409,7 @@ if Drawing and getgc and writefile and readfile then
 					end 
 				end
 				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-				    if v.Team ~= game.Players.LocalPlayer.Team and getbodyparts(v) then
+				    if v.Team ~= player.Team and getbodyparts(v) then
     					local playerchar = getbodyparts(v).char
     					local billboard = Instance.new("BillboardGui")
     					billboard.Name = "E"
@@ -2508,7 +2509,7 @@ if Drawing and getgc and writefile and readfile then
 					end
 				end
 			end
-			for i,v in pairs(game.Workspace.Players[game.Players.LocalPlayer.Team.Name]:GetChildren()) do
+			for i,v in pairs(game.Workspace.Players[player.Team.Name]:GetChildren()) do
 				for i2,v2 in pairs(v:GetChildren()) do
 					if v2:FindFirstChild("BoxHandleAdornment") then
 						v2:FindFirstChild("BoxHandleAdornment"):Remove()
@@ -2549,7 +2550,7 @@ if Drawing and getgc and writefile and readfile then
 				end
 			end
 		else
-			for i,v in pairs(game.Workspace.Players[game.Players.LocalPlayer.Team.Name]:GetChildren()) do
+			for i,v in pairs(game.Workspace.Players[player.Team.Name]:GetChildren()) do
 				for i2,v2 in pairs(v:GetChildren()) do
 					if v2:FindFirstChild("BoxHandleAdornment") then
 						v2:FindFirstChild("BoxHandleAdornment"):Remove()
@@ -2655,7 +2656,7 @@ if Drawing and getgc and writefile and readfile then
 	end)
 	Aimbot_OtherFolder:AddLabel("I didn't make the silent aim!")
 
-    local PLAYER = game.Players.LocalPlayer
+    local PLAYER = player
     local MOUSE = PLAYER:GetMouse()
     local CC = game.Workspace.CurrentCamera
     
@@ -2663,7 +2664,7 @@ if Drawing and getgc and writefile and readfile then
         
     
     local function WallChecker(p, ...)
-        local f = #game.Workspace.CurrentCamera:GetPartsObscuringTarget({p}, {game.Workspace.CurrentCamera, game.Players.LocalPlayer.Character, ...})
+        local f = #game.Workspace.CurrentCamera:GetPartsObscuringTarget({p}, {game.Workspace.CurrentCamera, player.Character, ...})
         if f == 0 or f == 1 then
             return true
         end
@@ -2675,10 +2676,10 @@ if Drawing and getgc and writefile and readfile then
 		local closestdist = math.huge
 		local closestplr = nil
 		for _,plr in next, game.Players:GetPlayers() do
-			if plr.Name ~= game.Players.LocalPlayer.Name and plr.Team.Name ~= game.Players.LocalPlayer.Team.Name and getbodyparts(plr) ~= nil then
+			if plr.Name ~= player.Name and plr.Team.Name ~= player.Team.Name and getbodyparts(plr) ~= nil then
 				local f = game.Workspace.CurrentCamera:WorldToScreenPoint(getbodyparts(plr).char["Head"].Position)
 				local f2 = Vector2.new(f.X, f.Y)
-				local mouseloc = Vector2.new(game.Players.LocalPlayer:GetMouse().X, game.Players.LocalPlayer:GetMouse().Y)
+				local mouseloc = Vector2.new(player:GetMouse().X, player:GetMouse().Y)
 				local v = (f2 - mouseloc).Magnitude
 				if v < closestdist then
 					closestdist = v
@@ -2752,11 +2753,11 @@ if Drawing and getgc and writefile and readfile then
     
     game:GetService('RunService').Heartbeat:Connect(function()
         if Main_Settings.aimbot.autoshoot then
-        	local Target = game.Players.LocalPlayer:GetMouse().Target
+        	local Target = player:GetMouse().Target
         	local plrteam = Target.Parent.Parent.Name
         	
         	if Target.Name == "Head" or Target.Name == "Torso" or Target.Name == "Left Leg" or Target.Name == "Right Leg" or Target.Name == "Left Arm" or Target.Name == "Right Arm" then
-            	if (plrteam == "Ghosts" or plrteam == "Phantoms") and plrteam ~= game.Players.LocalPlayer.Team.Name then
+            	if (plrteam == "Ghosts" or plrteam == "Phantoms") and plrteam ~= player.Team.Name then
                     mouse1press()
             		wait()
             		mouse1release()
@@ -3283,14 +3284,14 @@ if Drawing and getgc and writefile and readfile then
 	
 	game:GetService("RunService").RenderStepped:Connect(function()
 		getbasewalkspeed2:setbasewalkspeed(Other_Speed)
-		if game.Players.LocalPlayer.Character ~= nil then
-			if game.Players.LocalPlayer.Character.Humanoid.JumpPower ~= Other_Jump then
-				game.Players.LocalPlayer.Character.Humanoid.JumpPower = Other_Jump
+		if player.Character ~= nil then
+			if player.Character.Humanoid.JumpPower ~= Other_Jump then
+				player.Character.Humanoid.JumpPower = Other_Jump
 			end
 		end
 	end)
 	
-	local Player = game:GetService("Players").LocalPlayer;
+	local Player = player;
 	local UserInputService = game:GetService("UserInputService");
 	local Bricks = {};
 	local Space;
@@ -3360,5 +3361,5 @@ if Drawing and getgc and writefile and readfile then
 	
 	WriteToConsole("Loaded")
 else
-	game.Players.LocalPlayer:Kick("Your exploit does not support all the functions this script needs!")
+	game:GetService("Players").LocalPlayer:Kick("Your exploit does not support all the functions this script needs!")
 end
