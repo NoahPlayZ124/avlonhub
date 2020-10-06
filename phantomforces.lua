@@ -2791,12 +2791,17 @@ if Drawing and getgc and writefile and readfile then
 			   if type(v2) == "table" and rawget(v2, 'gammo') then
 				   gamelogic = v2;
 			   end
-			   if type(v2) == "table" and rawget(v2, 'breakwindow') then
-				   effects = v2;
-			   end
 		   end
 	   end
 	end
+	
+    for i, v in pairs(getgc(true)) do
+       if type(v) == "table" then
+            if rawget(v, "effects") then
+                effects = v.effects.module
+            end
+       end
+    end
 	
 	local Mods_Window = Window:AddTab("Mods")
 	
@@ -3250,13 +3255,12 @@ if Drawing and getgc and writefile and readfile then
 
 		--Break All Windows
 	local Other_BreakAllWindowsButton = Other_Window:AddButton("Break All Windows", function()
-        local Windows = {}
         for i,v in next, workspace:GetDescendants() do
             if v.Name:lower() == "window" then
-                table.insert(Windows,v)
+                local window = v
+                effects.breakwindow(window, window, nil, true, true, nil, nil, nil)
             end
         end
-        effects:breakwindows(Windows)
 	end)
 	
 		--Save Settings
