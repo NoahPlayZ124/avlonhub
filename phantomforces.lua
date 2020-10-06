@@ -2980,24 +2980,24 @@ if Drawing and getgc and writefile and readfile then
 			for i,v in pairs(game.ReplicatedStorage.GunModules:GetChildren()) do
 				local mod = require(v)
 				if mod["animations"]["stab1"] then
-					mod["animations"]["stab1"].timescale = 0
-					mod["animations"]["stab1"].resettime = 0
-					mod["animations"]["stab1"].stdtimescale = 0
+					mod["animations"]["stab1"].timescale = 0.1
+					mod["animations"]["stab1"].resettime = 0.1
+					mod["animations"]["stab1"].stdtimescale = 0.1
 				end
 				if mod["animations"]["stab2"] then
-					mod["animations"]["stab2"].timescale = 0
-					mod["animations"]["stab2"].resettime = 0
-					mod["animations"]["stab2"].stdtimescale = 0
+					mod["animations"]["stab2"].timescale = 0.1
+					mod["animations"]["stab2"].resettime = 0.1
+					mod["animations"]["stab2"].stdtimescale = 0.1
 				end
 				if mod["animations"]["quickstab"] then
-					mod["animations"]["quickstab"].timescale = 0
-					mod["animations"]["quickstab"].resettime = 0
-					mod["animations"]["quickstab"].stdtimescale = 0
+					mod["animations"]["quickstab"].timescale = 0.1
+					mod["animations"]["quickstab"].resettime = 0.1
+					mod["animations"]["quickstab"].stdtimescale = 0.1
 				end
 				if mod["animations"]["spot"] then
-					mod["animations"]["spot"].timescale = 0
-					mod["animations"]["spot"].resettime = 0
-					mod["animations"]["spot"].stdtimescale = 0
+					mod["animations"]["spot"].timescale = 0.1
+					mod["animations"]["spot"].resettime = 0.1
+					mod["animations"]["spot"].stdtimescale = 0.1
 				end
 			end
 		elseif bool == false then
