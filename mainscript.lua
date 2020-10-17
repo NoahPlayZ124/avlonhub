@@ -1,3 +1,9 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+--
+
 print("Loading AvlonHub!")
 if game.PlaceId == 292439477 then
     if readfile and writefile and getgc and Drawing and mousemoverel then
