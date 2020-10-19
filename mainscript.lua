@@ -5,7 +5,7 @@ end
 --
 
 print("Loading AvlonHub!")
-if game.PlaceId == 292439477 then
+if game.PlaceId == 292439477 or game.PlaceId == 299659045 then
     if readfile and writefile and getgc and Drawing and mousemoverel then
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/phantomforces.lua", true))()
     else
