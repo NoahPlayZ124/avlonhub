@@ -2262,20 +2262,20 @@ if Drawing and getgc and writefile and readfile then
 		return false
 	end
 	
-	local otherTeamR
-	if player.Team ~= nil then
-		if player.Team.Name == "Ghosts" then
-			otherTeamR = "Phantoms"
-		elseif player.Team.Name == "Phantoms" then
-			otherTeamR = "Ghosts"
-		end
-	end
-
-
 	local players = game.Workspace:FindFirstChild("Players")
-	local otherteam = players:FindFirstChild(otherTeamR)
+	local otherteam = nil
+    local otherTeamR
 
 	game:GetService('RunService').Stepped:Connect(function()
+    	if player.Team ~= nil then
+    		if player.Team.Name == "Ghosts" then
+    			otherTeamR = "Phantoms"
+    		elseif player.Team.Name == "Phantoms" then
+    			otherTeamR = "Ghosts"
+    		end
+    	end
+    
+    	otherteam = players:FindFirstChild(otherTeamR)
 	    local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
 	    
         pcall(function()
