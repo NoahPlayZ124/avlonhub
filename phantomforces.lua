@@ -33,12 +33,14 @@ if Drawing and getgc and writefile and readfile then
     	Message.Msg.Visible = true
     end
     
-    local getbodyparts
-    for i,v in next, getgc(true) do
-        if type(v) == "table" and rawget(v,'getbodyparts') then
-            getbodyparts = v.getbodyparts;
-        end
-    end
+    WriteToConsole("Name ESP currently not fully working!")
+    
+   -- local getbodyparts
+   -- for i,v in next, getgc(true) do
+   --     if type(v) == "table" and rawget(v,'getbodyparts') then
+   --         getbodyparts = v.getbodyparts;
+    --    end
+    --end
 	
 	local imgui = Instance.new("ScreenGui")
 	local Prefabs = Instance.new("Frame")
@@ -2259,22 +2261,22 @@ if Drawing and getgc and writefile and readfile then
 		end
 		return false
 	end
+	
+	local otherTeamR
+	if player.Team ~= nil then
+		if player.Team.Name == "Ghosts" then
+			otherTeamR = "Phantoms"
+		elseif player.Team.Name == "Phantoms" then
+			otherTeamR = "Ghosts"
+		end
+	end
+
+
+	local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
+	local players = game.Workspace:FindFirstChild("Players")
+	local otherteam = players:FindFirstChild(otherTeamR)
 
 	game:GetService('RunService').Stepped:Connect(function()
-		local otherTeamR
-		if player.Team ~= nil then
-			if player.Team.Name == "Ghosts" then
-				otherTeamR = "Phantoms"
-			elseif player.Team.Name == "Phantoms" then
-				otherTeamR = "Ghosts"
-			end
-		end
-	
-
-		local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
-		local players = game.Workspace:FindFirstChild("Players")
-		local otherteam = players:FindFirstChild(otherTeamR)
-
         pcall(function()
             FOVCircle.Visible = Main_Settings.aimbot.fov
     		FOVCircle.Transparency = math.acos(visuals_transparency) - 0.50
@@ -2305,43 +2307,41 @@ if Drawing and getgc and writefile and readfile then
 					end
 				end
 
-				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-    				if v.Team ~= player.Team and getbodyparts(v) ~= nil then
-    				    for i2,v2 in pairs(allTracers) do
-    						if v2.AssignedTo == getbodyparts(v).char then
-    							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(getbodyparts(v).char.Torso.CFrame * CFrame.new(0, getbodyparts(v).char.Torso.Size.Y, 0).p);
-    							if onScreen then
-    								v2.value.To = Vector2.new(vector.X, vector.Y)
-    								v2.value.Transparency = math.acos(visuals_transparency) - 0.50
-    								if Main_Settings.visuals.rainbow then
-    									v2.value.Color = rainbowcolor
-    								else
-    									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    								end
-    							end
-    						end
-    				    end
-					
-    					if TracerExists(getbodyparts(v).char) == false and getbodyparts(v) ~= nil then
-    						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(getbodyparts(v).char.Torso.CFrame * CFrame.new(0, getbodyparts(v).char.Torso.Size.Y, 0).p);
-    						if onScreen then
-    							local Line = Drawing.new("Line")
-    							Line.Visible = true
-    							Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
-    							Line.To = Vector2.new(vector.X, vector.Y)
-    							if Main_Settings.visuals.rainbow then
-    								Line.Color = rainbowcolor
-    							else
-    								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    							end
-    							Line.Thickness = 1
-    							Line.Transparency = math.acos(visuals_transparency) - 0.50
-    
-    							local _Line = { value = Line, AssignedTo = getbodyparts(v).char }
-    							table.insert(allTracers, _Line)
-    						end
-					    end
-    				end
+				for i,v in pairs(otherteam:GetChildren()) do
+				    for i2,v2 in pairs(allTracers) do
+						if v2.AssignedTo == v then
+							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
+							if onScreen then
+								v2.value.To = Vector2.new(vector.X, vector.Y)
+								v2.value.Transparency = math.acos(visuals_transparency) - 0.50
+								if Main_Settings.visuals.rainbow then
+									v2.value.Color = rainbowcolor
+								else
+									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+								end
+							end
+						end
+				    end
+				
+					if v ~= nil and TracerExists(v) == false then
+						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Torso.CFrame * CFrame.new(0, v.Torso.Size.Y, 0).p);
+						if onScreen then
+							local Line = Drawing.new("Line")
+							Line.Visible = true
+							Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
+							Line.To = Vector2.new(vector.X, vector.Y)
+							if Main_Settings.visuals.rainbow then
+								Line.Color = rainbowcolor
+							else
+								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+							end
+							Line.Thickness = 1
+							Line.Transparency = math.acos(visuals_transparency) - 0.50
+
+							local _Line = { value = Line, AssignedTo = v }
+							table.insert(allTracers, _Line)
+						end
+				    end
 			    end
 			end
 		    
@@ -2352,32 +2352,30 @@ if Drawing and getgc and writefile and readfile then
 						v:Destroy() 
 					end 
 				end
-				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-				    if v.Team ~= player.Team and getbodyparts(v) then
-    					local playerchar = getbodyparts(v).char
-    					local billboard = Instance.new("BillboardGui")
-    					billboard.Name = "nameE"
-    					billboard.AlwaysOnTop = true
-    					billboard.Size = UDim2.new(15,0,1,0)
-    					billboard.StudsOffset = Vector3.new(0,5,0)
-    					billboard.Adornee = playerchar.Torso
-    					billboard.Parent = game.CoreGui
-    					
-    					local Label = Instance.new('TextLabel')
-                        Label.BackgroundTransparency = 1
-                        Label.Size = UDim2.new(1,0,1,0)
-    					if Main_Settings.visuals.rainbow then
-    						Label.TextColor3 = rainbowcolor
-    					else
-    						Label.TextColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    					end
-                        Label.TextStrokeColor3 = Color3.fromRGB(27,42,53)
-                        Label.Font = 'SourceSans'
-                        Label.TextStrokeTransparency = .6
-                        Label.TextScaled = true
-                        Label.Text = v.Name
-                        Label.Parent = billboard
+				for i,v in pairs(otherteam:GetChildren()) do
+					local playerchar = v
+					local billboard = Instance.new("BillboardGui")
+					billboard.Name = "nameE"
+					billboard.AlwaysOnTop = true
+					billboard.Size = UDim2.new(15,0,1,0)
+					billboard.StudsOffset = Vector3.new(0,5,0)
+					billboard.Adornee = playerchar.Torso
+					billboard.Parent = game.CoreGui
+					
+					local Label = Instance.new('TextLabel')
+                    Label.BackgroundTransparency = 1
+                    Label.Size = UDim2.new(1,0,1,0)
+					if Main_Settings.visuals.rainbow then
+						Label.TextColor3 = rainbowcolor
+					else
+						Label.TextColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 					end
+                    Label.TextStrokeColor3 = Color3.fromRGB(27,42,53)
+                    Label.Font = 'SourceSans'
+                    Label.TextStrokeTransparency = .6
+                    Label.TextScaled = true
+                    Label.Text = "none"
+                    Label.Parent = billboard
 				end
 			end
 			
@@ -2408,49 +2406,46 @@ if Drawing and getgc and writefile and readfile then
 						v:Destroy() 
 					end 
 				end
-				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-				    if v.Team ~= player.Team and getbodyparts(v) then
-    					local playerchar = getbodyparts(v).char
-    					local billboard = Instance.new("BillboardGui")
-    					billboard.Name = "E"
-    					billboard.AlwaysOnTop = true
-    					billboard.Size = UDim2.new(4, 0, 5.5, 0)
-    					billboard.StudsOffset = Vector3.new(0, 0, 0)
-    					billboard.Adornee = playerchar.Torso
-    					billboard.Parent = game.CoreGui
-    					local f1 = Instance.new("Frame", billboard)
-    					local f2 = Instance.new("Frame", billboard)
-    					local f3 = Instance.new("Frame", billboard)
-    					local f4 = Instance.new("Frame", billboard)
-    					f1.BorderSizePixel = 0
-    					f2.BorderSizePixel = 0
-    					f3.BorderSizePixel = 0
-    					f4.BorderSizePixel = 0
-    					if Main_Settings.visuals.rainbow then
-    						f1.BackgroundColor3 = rainbowcolor
-    						f2.BackgroundColor3 = rainbowcolor
-    						f3.BackgroundColor3 = rainbowcolor
-    						f4.BackgroundColor3 = rainbowcolor
-    					else
-    						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    					end
-    					f1.Transparency = visuals_transparency
-    					f2.Transparency = visuals_transparency
-    					f3.Transparency = visuals_transparency
-    					f4.Transparency = visuals_transparency
-    					f1.Size = UDim2.new(0, 1, 1, 0)
-    					f2.Size = UDim2.new(0, 1, 1, 0)
-    					f3.Size = UDim2.new(1, 0, 0, 1)
-    					f4.Size = UDim2.new(1, 0, 0, 1)
-    					f1.Position = UDim2.new(0, 0, 0, 0)
-    					f2.Position = UDim2.new(1, -1, 0, 0)
-    					f3.Position = UDim2.new(0, 0, 0, 0)
-    					f4.Position = UDim2.new(0, 0, 1, -1)
-    					f4.Name = "Bottom"
+				for i,v in pairs(otherteam:GetChildren()) do
+					local playerchar = v
+					local billboard = Instance.new("BillboardGui")
+					billboard.Name = "E"
+					billboard.AlwaysOnTop = true
+					billboard.Size = UDim2.new(4, 0, 5.5, 0)
+					billboard.StudsOffset = Vector3.new(0, 0, 0)
+					billboard.Adornee = playerchar.Torso
+					billboard.Parent = game.CoreGui
+					local f1 = Instance.new("Frame", billboard)
+					local f2 = Instance.new("Frame", billboard)
+					local f3 = Instance.new("Frame", billboard)
+					local f4 = Instance.new("Frame", billboard)
+					f1.BorderSizePixel = 0
+					f2.BorderSizePixel = 0
+					f3.BorderSizePixel = 0
+					f4.BorderSizePixel = 0
+					if Main_Settings.visuals.rainbow then
+						f1.BackgroundColor3 = rainbowcolor
+						f2.BackgroundColor3 = rainbowcolor
+						f3.BackgroundColor3 = rainbowcolor
+						f4.BackgroundColor3 = rainbowcolor
+					else
+						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 					end
+					f1.Transparency = visuals_transparency
+					f2.Transparency = visuals_transparency
+					f3.Transparency = visuals_transparency
+					f4.Transparency = visuals_transparency
+					f1.Size = UDim2.new(0, 1, 1, 0)
+					f2.Size = UDim2.new(0, 1, 1, 0)
+					f3.Size = UDim2.new(1, 0, 0, 1)
+					f4.Size = UDim2.new(1, 0, 0, 1)
+					f1.Position = UDim2.new(0, 0, 0, 0)
+					f2.Position = UDim2.new(1, -1, 0, 0)
+					f3.Position = UDim2.new(0, 0, 0, 0)
+					f4.Position = UDim2.new(0, 0, 1, -1)
 				end
 			end
 	
@@ -2675,30 +2670,26 @@ if Drawing and getgc and writefile and readfile then
 	local function GetClosestPlayer()
 		local closestdist = math.huge
 		local closestplr = nil
-		for _,plr in next, game.Players:GetPlayers() do
-			if plr.Name ~= player.Name and plr.Team.Name ~= player.Team.Name and getbodyparts(plr) ~= nil then
-				local f = game.Workspace.CurrentCamera:WorldToScreenPoint(getbodyparts(plr).char["Head"].Position)
-				local f2 = Vector2.new(f.X, f.Y)
-				local mouseloc = Vector2.new(player:GetMouse().X, player:GetMouse().Y)
-				local v = (f2 - mouseloc).Magnitude
-				if v < closestdist then
-					closestdist = v
-					closestplr = plr
-				end
+		for _,plr in pairs(otherteam:GetChildren()) do
+			local f = game.Workspace.CurrentCamera:WorldToScreenPoint(plr["Head"].Position)
+			local f2 = Vector2.new(f.X, f.Y)
+			local mouseloc = Vector2.new(player:GetMouse().X, player:GetMouse().Y)
+			local v = (f2 - mouseloc).Magnitude
+			if v < closestdist then
+				closestdist = v
+				closestplr = plr
 			end
 		end
-		
 	
 		if closestplr ~= nil then
-			if getbodyparts(closestplr) ~= nil then
-				local f = game.Workspace.CurrentCamera:WorldToScreenPoint(getbodyparts(closestplr).char["Head"].Position)
+			if closestplr.Head ~= nil then
+				local f = game.Workspace.CurrentCamera:WorldToScreenPoint(closestplr["Head"].Position)
 				local f2 = Vector2.new(f.X, f.Y)
 				local center = Vector2.new((game.Workspace.CurrentCamera.ViewportSize.X / 2), game.Workspace.CurrentCamera.ViewportSize.Y / 2)
 				local v = (f2 - center).Magnitude
 				if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false then
 				    if Main_Settings.aimbot.wallcheck then
-				        print(WallChecker(getbodyparts(closestplr).char[Main_Settings.aimbot.aimat].Position, closestplr))
-				        if WallChecker(getbodyparts(closestplr).char[Main_Settings.aimbot.aimat].Position, closestplr) then
+				        if WallChecker(closestplr[Main_Settings.aimbot.aimat].Position, closestplr) then
     				        if v <= Main_Settings.aimbot.fovradius then
     					        return closestplr
     				        end
@@ -2710,7 +2701,7 @@ if Drawing and getgc and writefile and readfile then
 				    end
 				else
                     if Main_Settings.aimbot.wallcheck then
-				        if WallChecker(getbodyparts(closestplr).char[Main_Settings.aimbot.aimat].Position, closestplr) then
+				        if WallChecker(closestplr[Main_Settings.aimbot.aimat].Position, closestplr) then
     					    return closestplr
 				        end
 				    else
@@ -2739,14 +2730,18 @@ if Drawing and getgc and writefile and readfile then
     end)
 
     game:GetService('RunService').RenderStepped:connect(function()
-        if Aimbot_ENABLED and Main_Settings.aimbot.enabled == true then 
+        if Aimbot_ENABLED and Main_Settings.aimbot.enabled then 
 			local Target = GetClosestPlayer()
 			if Target then
-				local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(getbodyparts(Target).char[Main_Settings.aimbot.aimat].Position)
+				local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(Target[Main_Settings.aimbot.aimat].Position)
 				local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
 				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / 10, (aimAt.Y - mouseLocation.Y) / 10
 			
-				mousemoverel(incrementX, incrementY)
+			    if (isrbxactive() ~= nil) and isrbxactive() == true then
+			        mousemoverel(incrementX, incrementY)
+			    elseif isrbxactive() == nil then
+			        mousemoverel(incrementX, incrementY)
+			    end
 			end
         end
     end)
