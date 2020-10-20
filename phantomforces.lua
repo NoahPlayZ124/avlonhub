@@ -2272,11 +2272,12 @@ if Drawing and getgc and writefile and readfile then
 	end
 
 
-	local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
 	local players = game.Workspace:FindFirstChild("Players")
 	local otherteam = players:FindFirstChild(otherTeamR)
 
 	game:GetService('RunService').Stepped:Connect(function()
+	    local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
+	    
         pcall(function()
             FOVCircle.Visible = Main_Settings.aimbot.fov
     		FOVCircle.Transparency = math.acos(visuals_transparency) - 0.50
