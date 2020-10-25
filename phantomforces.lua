@@ -2131,7 +2131,7 @@ if Drawing and getgc and writefile and readfile then
 	backupModules.Parent = game:GetService("ReplicatedStorage")
 
 	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
-		main_color = Color3.fromRGB(41, 74, 122),
+		main_color = Color3.fromRGB(235, 97, 35),
 		min_size = Vector2.new(500, 400),
 		toggle_key = Enum.KeyCode.RightShift,
 		can_resize = false,
