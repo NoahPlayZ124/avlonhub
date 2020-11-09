@@ -2738,11 +2738,7 @@ if Drawing and getgc and writefile and readfile then
 				local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
 				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / 10, (aimAt.Y - mouseLocation.Y) / 10
 			
-			    if (isrbxactive() ~= nil) and isrbxactive() == true then
-			        mousemoverel(incrementX, incrementY)
-			    elseif isrbxactive() == nil then
-			        mousemoverel(incrementX, incrementY)
-			    end
+			    mousemoverel(incrementX, incrementY)
 			end
         end
     end)
