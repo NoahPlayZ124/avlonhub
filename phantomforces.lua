@@ -2659,14 +2659,6 @@ if Drawing and getgc and writefile and readfile then
 	
 	fovradiusfix = true
 
-	Aimbot_Window:AddLabel(" ")
-    
-	local Aimbot_OtherFolder = Aimbot_Window:AddFolder("Other")
-	local Aimbot_SilentAim = Aimbot_OtherFolder:AddButton("Silent Aim", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/rarescripts/master/pfsilentaim"))()
-	end)
-	Aimbot_OtherFolder:AddLabel("I didn't make the silent aim!")
-
     local PLAYER = player
     local MOUSE = PLAYER:GetMouse()
     local CC = game.Workspace.CurrentCamera
