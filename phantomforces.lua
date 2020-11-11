@@ -2071,6 +2071,7 @@ if Drawing and getgc and writefile and readfile then
 			wallcheck = false,
 			aimat = "Head",
 			aimatrandom = false,
+			smoothness = 10,
 			autoshoot = false,
 			fov = false,
 			fovradius = 200,
@@ -2577,7 +2578,6 @@ if Drawing and getgc and writefile and readfile then
 	--///////////////////////////////////////////////////////////////////////--
 	
 	local Aimbot_Window = Window:AddTab("Aimbot")
-    Aimbot_Window:AddLabel("Aimbot is in beta! (Unstable)")
 
 		--Enabled
     local Aimbot_EnabledToggle = Aimbot_Window:AddSwitch("Enabled", function(bool)
@@ -2614,6 +2614,21 @@ if Drawing and getgc and writefile and readfile then
 	Aimbot_AimAtDropdown:Add("Torso")
 	Aimbot_AimAtDropdown:Add("Random")
 	if Main_Settings.aimbot.aimatrandom then Aimbot_AimAtDropdown:Set("Random") else Aimbot_AimAtDropdown:Set(Main_Settings.aimbot.aimat) end
+	    
+    local Aimbot_Smoothness = Aimbot_Window:AddSlider("Aimbot Smoothness", function(trans)
+        pcall(function()
+            if trans ~= 0 then
+                Main_Settings.aimbot.smoothness = trans * 10
+            else
+                Main_Settings.aimbot.smoothness = 10
+            end
+        end)
+	end, { 
+		["min"] = 0, 
+		["max"] = 10, 
+		["readonly"] = false,
+    })
+    Aimbot_Smoothness:Set(tonumber(Main_Settings.aimbot.smoothness))
 
     Aimbot_Window:AddLabel(" ")
 
@@ -2728,7 +2743,7 @@ if Drawing and getgc and writefile and readfile then
 				Main_Settings.aimbot.aimat = "Head"
 			end
 		end
-    end)
+	end)
 
     game:GetService('RunService').Heartbeat:connect(function()
         if Aimbot_ENABLED and Main_Settings.aimbot.enabled then 
@@ -2736,9 +2751,9 @@ if Drawing and getgc and writefile and readfile then
 			if Target then
 				local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(Target[Main_Settings.aimbot.aimat].Position)
 				local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
-				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / 10, (aimAt.Y - mouseLocation.Y) / 10
-			
-			    mousemoverel(incrementX, incrementY)
+				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / Main_Settings.aimbot.smoothness, (aimAt.Y - mouseLocation.Y) / Main_Settings.aimbot.smoothness
+				
+                mousemoverel(incrementX, incrementY)
 			end
         end
     end)
