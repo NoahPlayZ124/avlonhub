@@ -2730,7 +2730,7 @@ if Drawing and getgc and writefile and readfile then
 		end
     end)
 
-    game:GetService('RunService').RenderStepped:connect(function()
+    game:GetService('RunService').Heartbeat:connect(function()
         if Aimbot_ENABLED and Main_Settings.aimbot.enabled then 
 			local Target = GetClosestPlayer()
 			if Target then
@@ -3278,7 +3278,7 @@ if Drawing and getgc and writefile and readfile then
 	local getbasewalkspeed2 = getbasewalkspeed()
 	
 	
-	game:GetService("RunService").RenderStepped:Connect(function()
+	game:GetService("RunService").HeartBeat:Connect(function()
 		getbasewalkspeed2:setbasewalkspeed(Other_Speed)
 		if player.Character ~= nil then
 			if player.Character.Humanoid.JumpPower ~= Other_Jump then
@@ -3319,7 +3319,7 @@ if Drawing and getgc and writefile and readfile then
 	
 	local LastPosition = Vector3.new(0, 0, 0);
 	
-	game:GetService("RunService").RenderStepped:Connect(function()
+	game:GetService("RunService").HeartBeat:Connect(function()
 		local PositionChanged
 		local Torso = (Player.Character or Player.CharacterAdded:wait()):WaitForChild("Torso")
 		if ((Torso.Position - LastPosition).Magnitude > 0.75) then
