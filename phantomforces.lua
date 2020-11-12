@@ -2750,6 +2750,23 @@ end)
 		end
 		return false
 	end
+	
+	local function GetClosestPlayer2()
+		local closestdist = math.huge
+		local closestplr = nil
+		for _,plr in pairs(otherteam:GetChildren()) do
+			local f = game.Workspace.CurrentCamera:WorldToScreenPoint(plr:FindFirstChild("Head").Position)
+			local f2 = Vector2.new(f.X, f.Y)
+			local mouseloc = Vector2.new(player:GetMouse().X, player:GetMouse().Y)
+			local v = (f2 - mouseloc).Magnitude
+			if v < closestdist then
+				closestdist = v
+				closestplr = plr
+			end
+		end 
+		if closestplr ~= nil then if closestplr:FindFirstChild("Head") then return closestplr end end
+		return false
+	end
     
     MOUSE.Button2Up:connect(function(KEY)
         Aimbot_ENABLED = false
@@ -3145,11 +3162,13 @@ end)
 			return
 		elseif string.find(args[1]:lower(), "newgrenade") and Main_Settings.mods1.grenadetp then
             if otherteam:FindFirstChild("Player") ~= nil then
-                args[3]["blowuptime"] = 0.05
+                args[3]["blowuptime"] = 0.000001
                 for i,v in pairs(args[3]["frames"]) do
-                    local plr = GetClosestPlayer()
-                    if (plr ~= nil) and plr:FindFirstChild("HumanoidRootPart").Position.Y <= 100 then
-                        v["p0"] = plr:FindFirstChild("Head").Position
+                    local plr = GetClosestPlayer2()
+                    if game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame ~= plr.HumanoidRootPart.CFrame then
+                        if (plr ~= nil) and plr:FindFirstChild("HumanoidRootPart").Position.Y <= 100 then
+                            v["p0"] = plr:FindFirstChild("Head").Position
+                        end
                     end
                 end
             end
