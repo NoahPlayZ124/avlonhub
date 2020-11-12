@@ -2581,7 +2581,7 @@ if Drawing and getgc and writefile and readfile then
 	end)
 	
 	game:GetService('RunService').Heartbeat:Connect(function()
-    if Main_Settings.visuals.grenadeesp then
+    if Main_Settings.visuals.grenadeesp and Main_Settings.visuals.enabled then
         for i,v in pairs(game:GetService("Workspace").Ignore.Misc:GetChildren()) do
             if v.Name == "Trigger" and v:FindFirstChild("Indicator") then
                 if v:FindFirstChild("grenesp") == nil then
