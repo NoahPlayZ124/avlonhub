@@ -4,6 +4,11 @@ if Drawing and getgc and writefile and readfile then
 		version 1.3a
 		by Singularity (V3rm @ King Singularity) (Discord @ Singularity#5490)
 	--]]
+
+    local sirhurt = false
+    if (identifyexecutor ~= nil) and string.find(identifyexecutor():lower(), "sirhurt") then
+        sirhurt = true
+    end
 	
 	local ui_options = {
 		main_color = Color3.fromRGB(235, 97, 35),
@@ -13,7 +18,7 @@ if Drawing and getgc and writefile and readfile then
 	}
 	
 	do
-		local imgui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
+		local imgui = game:GetService("CoreGui"):FindFirstChild("imgui") or game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
 		if imgui then imgui:Destroy() end
 	end
 	
@@ -116,7 +121,11 @@ if Drawing and getgc and writefile and readfile then
 	local Windows = Instance.new("Frame")
 	
 	imgui.Name = "imgui"
-	imgui.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+    if sirhurt then
+        imgui.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+    else
+        imgui.Parent = game:GetService("CoreGui")
+    end
 	
 	Prefabs.Name = "Prefabs"
 	Prefabs.Parent = imgui
