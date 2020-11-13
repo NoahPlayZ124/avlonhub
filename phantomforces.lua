@@ -13,7 +13,7 @@ if Drawing and getgc and writefile and readfile then
 	}
 	
 	do
-		local imgui = game:GetService("CoreGui"):FindFirstChild("imgui")
+		local imgui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
 		if imgui then imgui:Destroy() end
 	end
 	
@@ -23,7 +23,7 @@ if Drawing and getgc and writefile and readfile then
     	local Message = Msg:Clone()
     	local MTag = Message.Tag
     	local Offset = 5
-    	Message.Parent = game.Players.LocalPlayer.PlayerGui.ChatGame.GlobalChat
+    	Message.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui").ChatGame.GlobalChat
     	Message.Text = "AvlonHub "
     	Message.TextColor3 = Color3.new(0, 0.6, 1)
     	table.insert(CurrentTexts, Message)
@@ -116,7 +116,7 @@ if Drawing and getgc and writefile and readfile then
 	local Windows = Instance.new("Frame")
 	
 	imgui.Name = "imgui"
-	imgui.Parent = game:GetService("CoreGui")
+	imgui.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
 	
 	Prefabs.Name = "Prefabs"
 	Prefabs.Parent = imgui
@@ -2134,7 +2134,7 @@ if Drawing and getgc and writefile and readfile then
 	backupModules.Parent = game:GetService("ReplicatedStorage")
 
 	local Window = library:AddWindow("AvlonHub (Phantom Forces) (By Spoorloos)", {
-		main_color = Color3.fromRGB(235, 97, 35),
+		main_color = Color3.fromRGB(241, 127, 255),
 		min_size = Vector2.new(500, 410),
 		toggle_key = Enum.KeyCode.RightShift,
 		can_resize = false,
@@ -2356,7 +2356,7 @@ if Drawing and getgc and writefile and readfile then
 		    
 		    --Name ESP
 			if Main_Settings.visuals.nameesp then
-				for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
 					if v.Name == "nameE" then 
 						v:Destroy() 
 					end 
@@ -2369,7 +2369,7 @@ if Drawing and getgc and writefile and readfile then
 					billboard.Size = UDim2.new(15,0,1,0)
 					billboard.StudsOffset = Vector3.new(0,5,0)
 					billboard.Adornee = playerchar.Torso
-					billboard.Parent = game.CoreGui
+					billboard.Parent = game.StarterGui
 					
 					local Label = Instance.new('TextLabel')
                     Label.BackgroundTransparency = 1
@@ -2410,7 +2410,7 @@ if Drawing and getgc and writefile and readfile then
 		    
 			--ESP
 			if Main_Settings.visuals.boxesp then
-				for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+				for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
 					if v.Name == "E" then 
 						v:Destroy() 
 					end 
@@ -2423,7 +2423,7 @@ if Drawing and getgc and writefile and readfile then
 					billboard.Size = UDim2.new(4, 0, 5.5, 0)
 					billboard.StudsOffset = Vector3.new(0, 0, 0)
 					billboard.Adornee = playerchar.Torso
-					billboard.Parent = game.CoreGui
+					billboard.Parent = game.StarterGui
 					local f1 = Instance.new("Frame", billboard)
 					local f2 = Instance.new("Frame", billboard)
 					local f3 = Instance.new("Frame", billboard)
@@ -2498,7 +2498,7 @@ if Drawing and getgc and writefile and readfile then
 				end
 			end
 		else
-			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
@@ -2530,7 +2530,7 @@ if Drawing and getgc and writefile and readfile then
 		end
 
 		if Main_Settings.visuals.boxesp == false then
-			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
@@ -2538,7 +2538,7 @@ if Drawing and getgc and writefile and readfile then
 		end
 		
 		if Main_Settings.visuals.nameesp == false then
-			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
 				if v.Name == "nameE" then
 				    v:Destroy()
 				end
