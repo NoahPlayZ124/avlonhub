@@ -3161,17 +3161,13 @@ end)
 		if string.find(args[1]:lower(), "changehealthx") and Main_Settings.mods1.nofalldamage then
 			return
 		elseif string.find(args[1]:lower(), "newgrenade") and Main_Settings.mods1.grenadetp then
-            if otherteam:FindFirstChild("Player") ~= nil then
-                args[3]["blowuptime"] = 0.000001
-                for i,v in pairs(args[3]["frames"]) do
-                    local plr = GetClosestPlayer2()
-                    if game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame ~= plr.HumanoidRootPart.CFrame then
-                        if (plr ~= nil) and plr:FindFirstChild("HumanoidRootPart").Position.Y <= 100 then
-                            v["p0"] = plr:FindFirstChild("Head").Position
-                        end
-                    end
-                end
-            end
+		    local erferfergfwf = GetClosestPlayer2()
+		    if (erferfergfwf ~= nil) and game:GetService("Players").LocalPlayer.Character.Head.Position ~= erferfergfwf.Head.Position then
+		    	args[3]["blowuptime"] = 0.002
+	            for i,v in pairs(args[3]["frames"]) do
+	                v["p0"] = erferfergfwf:FindFirstChild("Head").Position
+	            end
+		    end
             return old(self, unpack(args))
 		else
 		    return old(self, unpack(args))
@@ -3354,7 +3350,7 @@ end)
 	local getbasewalkspeed2 = getbasewalkspeed()
 	
 	
-	game:GetService("RunService").HeartBeat:Connect(function()
+	game:GetService("RunService").RenderStepped:Connect(function()
 		getbasewalkspeed2:setbasewalkspeed(Other_Speed)
 		if player.Character ~= nil then
 			if player.Character.Humanoid.JumpPower ~= Other_Jump then
@@ -3395,7 +3391,7 @@ end)
 	
 	local LastPosition = Vector3.new(0, 0, 0);
 	
-	game:GetService("RunService").HeartBeat:Connect(function()
+	game:GetService("RunService").RenderStepped:Connect(function()
 		local PositionChanged
 		local Torso = (Player.Character or Player.CharacterAdded:wait()):WaitForChild("Torso")
 		if ((Torso.Position - LastPosition).Magnitude > 0.75) then
