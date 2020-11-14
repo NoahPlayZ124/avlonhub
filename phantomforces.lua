@@ -2096,6 +2096,7 @@ if Drawing and getgc and writefile and readfile then
 			rapidfire = false,
 			instantknife = false,
 			grenadetp = false,
+			autoheadshot = false,
 			firerate = 43
 		},
 		mods2 = {
@@ -3108,6 +3109,12 @@ end)
 	end)
 	Mods_GrenadeTPToggle:Set(Main_Settings.mods1.grenadetp)
 	
+		--AutoHeadshot
+	local Mods_AutoHeadshotToggle = Mods_Window:AddSwitch("Auto Headshot", function(bool)
+	    Main_Settings.mods1.autoheadshot = bool
+	end)
+	Mods_AutoHeadshotToggle:Set(Main_Settings.mods1.autoheadshot)
+	
 	local fireratefix = false
 		--FireRate
 	local Mods_FireRateSlider = Mods_Window:AddSlider("Fire Rate", function(x)
@@ -3178,6 +3185,11 @@ end)
 	            end
 		    end
             return old(self, unpack(args))
+        elseif string.find(args[1]:lower(), "bullethit") and Main_Settings.mods1.autoheadshot then
+        	if args[4] ~= nil then
+        		args[4] = args[4].Parent:FindFirstChild("Head")
+        	end
+        	return old(self, unpack(args))
 		else
 		    return old(self, unpack(args))
 		end
