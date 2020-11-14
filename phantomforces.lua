@@ -2365,7 +2365,7 @@ if Drawing and getgc and writefile and readfile then
 		    
 		    --Name ESP
 			if Main_Settings.visuals.nameesp then
-				for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
+				for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 					if v.Name == "nameE" then 
 						v:Destroy() 
 					end 
@@ -2378,7 +2378,7 @@ if Drawing and getgc and writefile and readfile then
 					billboard.Size = UDim2.new(15,0,1,0)
 					billboard.StudsOffset = Vector3.new(0,5,0)
 					billboard.Adornee = playerchar.Torso
-					billboard.Parent = game.StarterGui
+					billboard.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 					
 					local Label = Instance.new('TextLabel')
                     Label.BackgroundTransparency = 1
@@ -2419,7 +2419,7 @@ if Drawing and getgc and writefile and readfile then
 		    
 			--ESP
 			if Main_Settings.visuals.boxesp then
-				for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
+				for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 					if v.Name == "E" then 
 						v:Destroy() 
 					end 
@@ -2432,7 +2432,7 @@ if Drawing and getgc and writefile and readfile then
 					billboard.Size = UDim2.new(4, 0, 5.5, 0)
 					billboard.StudsOffset = Vector3.new(0, 0, 0)
 					billboard.Adornee = playerchar.Torso
-					billboard.Parent = game.StarterGui
+					billboard.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 					local f1 = Instance.new("Frame", billboard)
 					local f2 = Instance.new("Frame", billboard)
 					local f3 = Instance.new("Frame", billboard)
@@ -2507,7 +2507,7 @@ if Drawing and getgc and writefile and readfile then
 				end
 			end
 		else
-			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
@@ -2539,7 +2539,7 @@ if Drawing and getgc and writefile and readfile then
 		end
 
 		if Main_Settings.visuals.boxesp == false then
-			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
@@ -2547,7 +2547,7 @@ if Drawing and getgc and writefile and readfile then
 		end
 		
 		if Main_Settings.visuals.nameesp == false then
-			for i,v in pairs(game:GetService("StarterGui"):GetChildren()) do 
+			for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 				if v.Name == "nameE" then
 				    v:Destroy()
 				end
@@ -2659,7 +2659,7 @@ end)
             if trans ~= 0 then
                 Main_Settings.aimbot.smoothness = trans * 10
             else
-                Main_Settings.aimbot.smoothness = 10
+                Main_Settings.aimbot.smoothness = 3
             end
         end)
 	end, { 
