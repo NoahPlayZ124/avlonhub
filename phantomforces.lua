@@ -2107,7 +2107,7 @@ if Drawing and getgc and writefile and readfile then
 		other = {
 			walkspeed = 15,
 			jumppower = 20,
-			fly = false,
+			infinitejump = false,
 			fullbright = false,
 		}
 	}
@@ -3280,7 +3280,6 @@ end)
 	local Other_Window = Window:AddTab("Other")
 	local Other_Jump = 40
 	local Other_Speed = 15
-	local Other_Fly = false
 	
 	local walkspeedfix = false
 		--Speed
@@ -3318,12 +3317,11 @@ end)
 	
 	jumppowerfix = true
 	
-		--Fly
-	local Other_FlyToggle = Other_Window:AddSwitch("Fly", function(bool)
-		Other_Fly = bool
-		Main_Settings.other.fly = bool
+		--Infinite Jump
+	local Other_InfJumpToggle = Other_Window:AddSwitch("Infinite Jump", function(bool)
+		Main_Settings.other.infinitejump = bool
 	end)
-	Other_FlyToggle:Set(Main_Settings.other.fly)
+	Other_InfJumpToggle:Set(Main_Settings.other.infinitejump)
 
 		--Fullbright
 	local Other_FullBrightToggle = Other_Window:AddSwitch("Fullbright", function(bool)
@@ -3380,74 +3378,13 @@ end)
 		end
 	end)
 	
-	local Player = player;
-	local UserInputService = game:GetService("UserInputService");
-	local Bricks = {};
-	local Space;
-	local WalkInAir = true;
-	
-	UserInputService.InputBegan:Connect(function(InputObject, GameProcessedEvent)
-		if ((not GameProcessedEvent) and (InputObject.UserInputType == Enum.UserInputType.Keyboard)) then
-			if (InputObject.KeyCode == Enum.KeyCode.P) then
-				for Key, Value in next, Bricks do
-					Value:Destroy()
-				end
-			elseif (InputObject.KeyCode == Enum.KeyCode.Space) then
-				if Other_Fly then
-					Space = true
-				end
-			end
+	game:GetService("UserInputService").InputBegan:Connect(function(i)
+		if i.KeyCode == Enum.KeyCode.Space and Main_Settings.other.infinitejump then
+			game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState("Jumping")
+			wait()
+			game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState("Seated")
 		end
 	end)
-	
-	UserInputService.InputEnded:Connect(function(InputObject, GameProcessedEvent)
-		if ((not GameProcessedEvent) and (InputObject.UserInputType == Enum.UserInputType.Keyboard)) then
-			if (InputObject.KeyCode == Enum.KeyCode.Space) then
-				if Other_Fly then
-					Space = nil
-				end
-			end
-		end
-	end)
-	
-	local LastPosition = Vector3.new(0, 0, 0);
-	
-	game:GetService("RunService").RenderStepped:Connect(function()
-		local PositionChanged
-		local Torso = (Player.Character or Player.CharacterAdded:wait()):WaitForChild("Torso")
-		if ((Torso.Position - LastPosition).Magnitude > 0.75) then
-			PositionChanged = true
-		end
-		if (Other_Fly and (Space or (WalkInAir and PositionChanged))) then
-			local FlyBrick = Instance.new("Part", (Torso:GetChildren()[1] or Torso))
-			FlyBrick.Name = "23dd"
-			FlyBrick.Transparency = 1
-			FlyBrick.Anchored = true
-			FlyBrick.CFrame = (Torso.CFrame * CFrame.new(0, -2.25, 0))
-			FlyBrick.Size = Vector3.new(5, 0.05, 5)
-			FlyBrick.BrickColor = BrickColor.new("Institutional white")
-			FlyBrick.Locked = true
-			FlyBrick.TopSurface = Enum.SurfaceType.SmoothNoOutlines
-			FlyBrick.BottomSurface = FlyBrick.TopSurface
-			FlyBrick.RightSurface = FlyBrick.TopSurface
-			FlyBrick.LeftSurface = FlyBrick.TopSurface
-			FlyBrick.FrontSurface = FlyBrick.TopSurface
-			FlyBrick.BackSurface = FlyBrick.TopSurface
-			Bricks[#Bricks + 1] = FlyBrick
-		end
-		LastPosition = Torso.Position
-	
-		if Other_Fly == false then
-			if Torso:GetChildren()[1]:FindFirstChild("23dd") then
-				for i,v in pairs(Torso:GetChildren()[1]:GetChildren()) do
-					if v.Name == "23dd" then
-						v:Destroy()
-					end
-				end
-			end
-		end
-	end)
-	
 	WriteToConsole("Loaded")
 else
 	game:GetService("Players").LocalPlayer:Kick("Your exploit does not support all the functions this script needs!")
