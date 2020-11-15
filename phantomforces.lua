@@ -3174,7 +3174,7 @@ end)
 	
 	network.send = function(self, ...)
 		local args = {...}
-		if string.find(args[1]:lower(), "changehealthx") and Main_Settings.mods1.nofalldamage then
+		if string.find(args[1]:lower(), "falldamage") and Main_Settings.mods1.nofalldamage then
 			return
 		elseif string.find(args[1]:lower(), "newgrenade") and Main_Settings.mods1.grenadetp then
 		    local erferfergfwf = GetClosestPlayer2()
