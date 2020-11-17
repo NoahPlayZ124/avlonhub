@@ -2666,7 +2666,23 @@ game:GetService('RunService').Heartbeat:connect(function()
     end
 end)
 
+--///////////////////////////////////////////////////////////////////////--
+--                                Other                                  --
+--///////////////////////////////////////////////////////////////////////--
 
+local Other_Window = Window:AddTab("Other")
+
+	--Save Settings
+local Other_SaveSettingsButton = Other_Window:AddButton("Save Current Settings", function()
+    saveSettings()
+    print("Saved Settings")
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Avlon Hub",
+        Text = "Saved Settings",
+        Icon = "rbxassetid://4909973011",
+        Duration = 5,
+    })
+end)
 
 
 library:FormatWindows()
