@@ -1,18 +1,24 @@
+
 --[[
 	ui-engine-v2
 	version 1.3a
 	by Singularity (V3rm @ King Singularity) (Discord @ Singularity#5490)
 --]]
 
+local sirhurt = false
+if (identifyexecutor ~= nil) and string.find(identifyexecutor():lower(), "sirhurt") then
+    sirhurt = true
+end
+
 local ui_options = {
-	main_color = Color3.fromRGB(41, 74, 122),
+	main_color = Color3.fromRGB(235, 97, 35),
 	min_size = Vector2.new(400, 300),
 	toggle_key = Enum.KeyCode.RightShift,
 	can_resize = true,
 }
 
 do
-	local imgui = game:GetService("CoreGui"):FindFirstChild("imgui")
+	local imgui = game:GetService("CoreGui"):FindFirstChild("imgui") or game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
 	if imgui then imgui:Destroy() end
 end
 
@@ -90,7 +96,11 @@ local Input_Roundify_4px = Instance.new("ImageLabel")
 local Windows = Instance.new("Frame")
 
 imgui.Name = "imgui"
-imgui.Parent = game:GetService("CoreGui")
+if sirhurt then
+    imgui.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+else
+    imgui.Parent = game:GetService("CoreGui")
+end
 
 Prefabs.Name = "Prefabs"
 Prefabs.Parent = imgui
@@ -1384,13 +1394,13 @@ function library:AddWindow(title, options)
 						keybind.Size = UDim2.new(0, gNameLen(title) + 80, 0, 20)
 
 						local shortkeys = { -- thanks to stroketon for helping me out with this
-				            RightControl = 'RightCtrl',
-				            LeftControl = 'LeftCtrl',
-				            LeftShift = 'LShift',
-				            RightShift = 'RShift',
-				            MouseButton1 = "Mouse1",
-				            MouseButton2 = "Mouse2"
-				        }
+							RightControl = 'RightCtrl',
+							LeftControl = 'LeftCtrl',
+							LeftShift = 'LShift',
+							RightShift = 'RShift',
+							MouseButton1 = "Mouse1",
+							MouseButton2 = "Mouse2"
+						}
 
 						local keybind = keybind_options.standard
 
@@ -1510,6 +1520,11 @@ function library:AddWindow(title, options)
 							end
 
 							return object, object_data
+						end
+
+						function dropdown_data:Set(n)
+							dropdown.Text = "      [ " .. n .. " ]"
+							pcall(callback, n)
 						end
 
 						return dropdown_data, dropdown
@@ -1662,173 +1677,173 @@ function library:AddWindow(title, options)
 							local global_env = {"getrawmetatable", "newcclosure", "islclosure", "setclipboard", "game", "workspace", "script", "math", "string", "table", "print", "wait", "BrickColor", "Color3", "next", "pairs", "ipairs", "select", "unpack", "Instance", "Vector2", "Vector3", "CFrame", "Ray", "UDim2", "Enum", "assert", "error", "warn", "tick", "loadstring", "_G", "shared", "getfenv", "setfenv", "newproxy", "setmetatable", "getmetatable", "os", "debug", "pcall", "ypcall", "xpcall", "rawequal", "rawset", "rawget", "tonumber", "tostring", "type", "typeof", "_VERSION", "coroutine", "delay", "require", "spawn", "LoadLibrary", "settings", "stats", "time", "UserSettings", "version", "Axes", "ColorSequence", "Faces", "ColorSequenceKeypoint", "NumberRange", "NumberSequence", "NumberSequenceKeypoint", "gcinfo", "elapsedTime", "collectgarbage", "PhysicalProperties", "Rect", "Region3", "Region3int16", "UDim", "Vector2int16", "Vector3int16", "load", "fire", "Fire"}
 
 							local Highlight = function(string, keywords)
-							    local K = {}
-							    local S = string
-							    local Token =
-							    {
-							        ["="] = true,
-							        ["."] = true,
-							        [","] = true,
-							        ["("] = true,
-							        [")"] = true,
-							        ["["] = true,
-							        ["]"] = true,
-							        ["{"] = true,
-							        ["}"] = true,
-							        [":"] = true,
-							        ["*"] = true,
-							        ["/"] = true,
-							        ["+"] = true,
-							        ["-"] = true,
-							        ["%"] = true,
+								local K = {}
+								local S = string
+								local Token =
+								{
+									["="] = true,
+									["."] = true,
+									[","] = true,
+									["("] = true,
+									[")"] = true,
+									["["] = true,
+									["]"] = true,
+									["{"] = true,
+									["}"] = true,
+									[":"] = true,
+									["*"] = true,
+									["/"] = true,
+									["+"] = true,
+									["-"] = true,
+									["%"] = true,
 									[";"] = true,
 									["~"] = true
-							    }
-							    for i, v in pairs(keywords) do
-							        K[v] = true
-							    end
-							    S = S:gsub(".", function(c)
-							        if Token[c] ~= nil then
-							            return "\32"
-							        else
-							            return c
-							        end
-							    end)
-							    S = S:gsub("%S+", function(c)
-							        if K[c] ~= nil then
-							            return c
-							        else
-							            return (" "):rep(#c)
-							        end
-							    end)
+								}
+								for i, v in pairs(keywords) do
+									K[v] = true
+								end
+								S = S:gsub(".", function(c)
+									if Token[c] ~= nil then
+										return "\32"
+									else
+										return c
+									end
+								end)
+								S = S:gsub("%S+", function(c)
+									if K[c] ~= nil then
+										return c
+									else
+										return (" "):rep(#c)
+									end
+								end)
 
-							    return S
+								return S
 							end
 
 							local hTokens = function(string)
-							    local Token =
-							    {
-							        ["="] = true,
-							        ["."] = true,
-							        [","] = true,
-							        ["("] = true,
-							        [")"] = true,
-							        ["["] = true,
-							        ["]"] = true,
-							        ["{"] = true,
-							        ["}"] = true,
-							        [":"] = true,
-							        ["*"] = true,
-							        ["/"] = true,
-							        ["+"] = true,
-							        ["-"] = true,
-							        ["%"] = true,
+								local Token =
+								{
+									["="] = true,
+									["."] = true,
+									[","] = true,
+									["("] = true,
+									[")"] = true,
+									["["] = true,
+									["]"] = true,
+									["{"] = true,
+									["}"] = true,
+									[":"] = true,
+									["*"] = true,
+									["/"] = true,
+									["+"] = true,
+									["-"] = true,
+									["%"] = true,
 									[";"] = true,
 									["~"] = true
-							    }
-							    local A = ""
-							    string:gsub(".", function(c)
-							        if Token[c] ~= nil then
-							            A = A .. c
-							        elseif c == "\n" then
-							            A = A .. "\n"
+								}
+								local A = ""
+								string:gsub(".", function(c)
+									if Token[c] ~= nil then
+										A = A .. c
+									elseif c == "\n" then
+										A = A .. "\n"
 									elseif c == "\t" then
 										A = A .. "\t"
-							        else
-							            A = A .. "\32"
-							        end
-							    end)
+									else
+										A = A .. "\32"
+									end
+								end)
 
-							    return A
+								return A
 							end
 
 							local strings = function(string)
-							    local highlight = ""
-							    local quote = false
-							    string:gsub(".", function(c)
-							        if quote == false and c == "\34" then
-							            quote = true
-							        elseif quote == true and c == "\34" then
-							            quote = false
-							        end
-							        if quote == false and c == "\34" then
-							            highlight = highlight .. "\34"
-							        elseif c == "\n" then
-							            highlight = highlight .. "\n"
+								local highlight = ""
+								local quote = false
+								string:gsub(".", function(c)
+									if quote == false and c == "\34" then
+										quote = true
+									elseif quote == true and c == "\34" then
+										quote = false
+									end
+									if quote == false and c == "\34" then
+										highlight = highlight .. "\34"
+									elseif c == "\n" then
+										highlight = highlight .. "\n"
 									elseif c == "\t" then
-									    highlight = highlight .. "\t"
-							        elseif quote == true then
-							            highlight = highlight .. c
-							        elseif quote == false then
-							            highlight = highlight .. "\32"
-							        end
-							    end)
+										highlight = highlight .. "\t"
+									elseif quote == true then
+										highlight = highlight .. c
+									elseif quote == false then
+										highlight = highlight .. "\32"
+									end
+								end)
 
-							    return highlight
+								return highlight
 							end
 
 							local info = function(string)
-							    local highlight = ""
-							    local quote = false
-							    string:gsub(".", function(c)
-							        if quote == false and c == "[" then
-							            quote = true
-							        elseif quote == true and c == "]" then
-							            quote = false
-							        end
-							        if quote == false and c == "\]" then
-							            highlight = highlight .. "\]"
-							        elseif c == "\n" then
-							            highlight = highlight .. "\n"
+								local highlight = ""
+								local quote = false
+								string:gsub(".", function(c)
+									if quote == false and c == "[" then
+										quote = true
+									elseif quote == true and c == "]" then
+										quote = false
+									end
+									if quote == false and c == "\]" then
+										highlight = highlight .. "\]"
+									elseif c == "\n" then
+										highlight = highlight .. "\n"
 									elseif c == "\t" then
-									    highlight = highlight .. "\t"
-							        elseif quote == true then
-							            highlight = highlight .. c
-							        elseif quote == false then
-							            highlight = highlight .. "\32"
-							        end
-							    end)
+										highlight = highlight .. "\t"
+									elseif quote == true then
+										highlight = highlight .. c
+									elseif quote == false then
+										highlight = highlight .. "\32"
+									end
+								end)
 
-							    return highlight
+								return highlight
 							end
 
 							local comments = function(string)
-							    local ret = ""
-							    string:gsub("[^\r\n]+", function(c)
-							        local comm = false
-							        local i = 0
-							        c:gsub(".", function(n)
-							            i = i + 1
-							            if c:sub(i, i + 1) == "--" then
-							                comm = true
-							            end
-							            if comm == true then
-							                ret = ret .. n
-							            else
-							                ret = ret .. "\32"
-							            end
-							        end)
-							        ret = ret
-							    end)
+								local ret = ""
+								string:gsub("[^\r\n]+", function(c)
+									local comm = false
+									local i = 0
+									c:gsub(".", function(n)
+										i = i + 1
+										if c:sub(i, i + 1) == "--" then
+											comm = true
+										end
+										if comm == true then
+											ret = ret .. n
+										else
+											ret = ret .. "\32"
+										end
+									end)
+									ret = ret
+								end)
 
-							    return ret
+								return ret
 							end
 
 							local numbers = function(string)
-							    local A = ""
-							    string:gsub(".", function(c)
-							        if tonumber(c) ~= nil then
-							            A = A .. c
-							        elseif c == "\n" then
-							            A = A .. "\n"
+								local A = ""
+								string:gsub(".", function(c)
+									if tonumber(c) ~= nil then
+										A = A .. c
+									elseif c == "\n" then
+										A = A .. "\n"
 									elseif c == "\t" then
 										A = A .. "\t"
-							        else
-							            A = A .. "\32"
-							        end
-							    end)
+									else
+										A = A .. "\32"
+									end
+								end)
 
-							    return A
+								return A
 							end
 
 							local highlight_lua = function(type)
@@ -2022,104 +2037,330 @@ function library:AddWindow(title, options)
 	return window_data, Window
 end
 
-local Window = library:AddWindow("AvlonHub (Arsenal)", {
-	main_color = Color3.fromRGB(41, 74, 122),
-	min_size = Vector2.new(500, 307),
+local Window = library:AddWindow("AvlonHub (Arsenal) (By Spoorloos)", {
+	main_color = Color3.fromRGB(241, 127, 255),
+	min_size = Vector2.new(500, 410),
 	toggle_key = Enum.KeyCode.RightShift,
 	can_resize = false,
 })
 
+local Main_Settings = {
+	visuals = {
+		enabled = false,
+		boxesp = false,
+		nameesp = false,
+		chams = false,
+		tracers = false,
+		crosshair = false,
+		transparency = 30,
+		visualscolor = {0.980000019073486328125, 0.9900000095367431640625, 1},
+		visualsrainbow = true,
+	},
+	aimbot = {
+		enabled = false,
+		wallcheck = false,
+		aimat = "Head",
+		aimatrandom = false,
+		smoothness = 10,
+		fov = false,
+		fovradius = 200,
+		ignorefov = false,
+	},
+}
+
+local fileexist = false
+if isfile then
+	fileexist = isfile(game.PlaceId .. ".avlonhub")
+elseif readfile then
+	pcall(function()
+		if readfile(game.PlaceId .. ".avlonhub") then
+			fileexist = true
+		end
+	end)
+else
+	game:GetService("Players").LocalPlayer:Kick("Exploit not supported!")
+end
+
+if fileexist then
+    Main_Settings = game:GetService("HttpService"):JSONDecode(readfile(game.PlaceId .. ".avlonhub"))
+else
+    writefile(game.PlaceId .. ".avlonhub", game:GetService("HttpService"):JSONEncode(Main_Settings))
+end
+
+local function saveSettings()
+    writefile(game.PlaceId .. ".avlonhub", game:GetService("HttpService"):JSONEncode(Main_Settings))
+end
+
 --///////////////////////////////////////////////////////////////////////--
 --                               Visuals                                 --
 --///////////////////////////////////////////////////////////////////////--
-local Visuals_Window = Window:AddTab("Visuals")
-local visuals_enabled = false
-local visuals_boxespenabled = false
-local visuals_chamsenabled = false
-local visuals_tracersenabled = false
-local visuals_color = Color3.new(1, 0, 0)
-local visuals_rainbow = false
+local visuals_transparency
 
---
-local Visuals_Toggle = Visuals_Window:AddSwitch("Enabled", function(bool)
-	visuals_enabled = bool
+local ESP_Window = Window:AddTab("Visuals")
+ESP_Window:Show()
+
+local ESP_Toggle = ESP_Window:AddSwitch("Enabled", function(bool)
+	Main_Settings.visuals.enabled = bool
 end)
+ESP_Toggle:Set(Main_Settings.visuals.enabled)
 
 
-local Visuals_BoxESPToggle = Visuals_Window:AddSwitch("Box ESP", function(bool)
-	visuals_boxespenabled = bool
+local ESP_BoxESPToggle = ESP_Window:AddSwitch("Box ESP", function(bool)
+	Main_Settings.visuals.boxesp = bool
 end)
+ESP_BoxESPToggle:Set(Main_Settings.visuals.boxesp)
 
-local Visuals_ChamsToggle = Visuals_Window:AddSwitch("Chams", function(bool)
-	visuals_chamsenabled = bool
+local ESP_NameESPToggle = ESP_Window:AddSwitch("Name ESP", function(bool)
+	Main_Settings.visuals.nameesp = bool
 end)
+ESP_NameESPToggle:Set(Main_Settings.visuals.nameesp)
 
-local Visuals_TracersToggle = Visuals_Window:AddSwitch("Tracers", function(bool)
-	visuals_tracersenabled = bool
+local ESP_ChamsToggle = ESP_Window:AddSwitch("Chams", function(bool)
+	Main_Settings.visuals.chams = bool
 end)
+ESP_ChamsToggle:Set(Main_Settings.visuals.chams)
 
-local Visuals_ColorPicker = Visuals_Window:AddColorPicker(function(color)
-	visuals_color = color
+local ESP_TracersToggle = ESP_Window:AddSwitch("Tracers", function(bool)
+	Main_Settings.visuals.tracers = bool
 end)
-Visuals_ColorPicker:Set(esp_color)
+ESP_TracersToggle:Set(Main_Settings.visuals.tracers)
 
-local Visuals_HA = Visuals_Window:AddHorizontalAlignment()
-Visuals_HA:AddButton("Rainbow", function()
-	if visuals_rainbow then
-		visuals_rainbow = false
+local ESP_CrosshairToggle = ESP_Window:AddSwitch("Crosshair", function(bool)
+	Main_Settings.visuals.crosshair = bool
+end)
+ESP_CrosshairToggle:Set(Main_Settings.visuals.crosshair)
+
+local Transparencyfix = false
+local ESP_Transparency = ESP_Window:AddSlider("Transparency", function(trans)
+    local num
+    if trans == 100 then
+        num = tonumber(1.0)
+    else
+        num = tonumber("0." .. string.sub(trans, 1, 1) .. string.sub(trans, 2, 2))
+    end
+    if num ~= 0 then
+        visuals_transparency = num
+    end
+    if trans ~= 0 then
+        Main_Settings.visuals.transparency = trans
+    end
+end, { 
+	["min"] = 0, 
+	["max"] = 100, 
+	["readonly"] = false,
+})
+ESP_Transparency:Set(Main_Settings.visuals.transparency)
+Transparencyfix = true
+
+local ESP_ColorPicker = ESP_Window:AddColorPicker(function(color)
+    local hue, saturation, value = color:ToHSV()
+    Main_Settings.visuals.visualscolor = {hue, saturation, value}
+end)
+ESP_ColorPicker:Set(Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3]))
+
+local ESP_HA = ESP_Window:AddHorizontalAlignment()
+ESP_HA:AddButton("Rainbow", function()
+	if Main_Settings.visuals.rainbow then
+		Main_Settings.visuals.rainbow = false
 	else
-		visuals_rainbow = true
+		Main_Settings.visuals.rainbow = true
 	end
 end)
 
-Visuals_HA:AddButton("Reset", function()
-	visuals_rainbow = false
-	Visuals_ColorPicker:Set(Color3.new(1, 0, 0))
-	visuals_color = Color3.new(1, 0, 0)
+ESP_HA:AddButton("Reset", function()
+	Main_Settings.visuals.rainbow = false
+	ESP_ColorPicker:Set(Color3.new(1, 0, 0))
+	
+	local hue, saturation, value = Color3.new(1, 0, 0):ToHSV()
+	Main_Settings.visuals.visualscolor = {hue, saturation, value}
 end)
 
+local CrossLine1 = Drawing.new("Line")
+CrossLine1.Visible = false
+CrossLine1.From = Vector2.new((workspace.CurrentCamera.ViewportSize.X / 2) - 12, workspace.CurrentCamera.ViewportSize.Y / 2)
+CrossLine1.To = Vector2.new((workspace.CurrentCamera.ViewportSize.X / 2) + 12, workspace.CurrentCamera.ViewportSize.Y / 2)
+CrossLine1.Thickness = 1
+CrossLine1.Transparency = tonumber(math.acos(Main_Settings.visuals.transparency) - 0.50)
+
+local CrossLine2 = Drawing.new("Line")
+CrossLine2.Visible = false
+CrossLine2.From = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, (workspace.CurrentCamera.ViewportSize.Y / 2) - 12)
+CrossLine2.To = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, (workspace.CurrentCamera.ViewportSize.Y / 2) + 12)
+CrossLine2.Thickness = 1
+CrossLine2.Transparency = tonumber(math.acos(Main_Settings.visuals.transparency) - 0.50)
+
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Transparency = tonumber(math.acos(Main_Settings.visuals.transparency) - 0.50)
+FOVCircle.Visible = false
+FOVCircle.Radius = 200
+FOVCircle.Thickness = 0.1
+FOVCircle.NumSides = 1000
+FOVCircle.Filled = false
+FOVCircle.Position = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y / 2)
+	
 local allTracers = { }
-	function TracerExists(element)
-		for _, value in pairs(allTracers) do
-			if value.AssignedTo == element then
-				return true
-			end
-		end
-		return false
-	end
 
-function zigzag(X) return math.acos(math.cos(X*math.pi))/math.pi end
-local counter = 0
-
-local function containsinplayers(name) 
-	for i,v in pairs(game.Players:GetChildren()) do
-		if v.Name == name then
+function TracerExists(element)
+	for _, value in pairs(allTracers) do
+		if value.AssignedTo == element then
 			return true
 		end
 	end
 	return false
 end
 
+local otherteam = nil
+local otherTeamR
+
+function zigzag(X) return math.acos(math.cos(X*math.pi))/math.pi end
+local counter = 0
+
 game:GetService('RunService').Stepped:Connect(function()
 	local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
+	
+	pcall(function()
+	    FOVCircle.Visible = Main_Settings.aimbot.fov
+		FOVCircle.Transparency = math.acos(visuals_transparency) - 0.50
+		if Main_Settings.visuals.rainbow then
+			FOVCircle.Color = rainbowcolor
+		else
+			FOVCircle.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+		end
+		FOVCircle.Radius = Main_Settings.aimbot.fovradius
+	end)
+	
+	if Main_Settings.visuals.enabled then
+        --Tracers
+		if Main_Settings.visuals.tracers then
+			for i,v in pairs(allTracers) do
+				if game.Workspace:FindFirstChild(v.AssignedTo) ~= true then
+					pcall(function()
+						allTracers[i].value:Remove();
+					end)
+					allTracers[i] = nil
+				end
+				local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo["UpperTorso"].CFrame * CFrame.new(0, v.AssignedTo["UpperTorso"].Size.Y, 0).p);
+				if onScreen == false then
+					pcall(function()
+						allTracers[i].value:Remove();
+					end)
+					allTracers[i] = nil
+				end
+			end
 
-	if visuals_enabled then
+			for i,v in pairs(game.Players:GetChildren()) do
+				if v.Team ~= game:GetService("Players").LocalPlayer.Team then
+				    for i2,v2 in pairs(allTracers) do
+						if v2.AssignedTo == v.Character then
+							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character["UpperTorso"].CFrame * CFrame.new(0, v.Character["UpperTorso"].Size.Y, 0).p);
+							if onScreen then
+								v2.value.To = Vector2.new(vector.X, vector.Y)
+								v2.value.Transparency = math.acos(Main_Settings.visuals.transparency) - 0.50
+								if Main_Settings.visuals.rainbow then
+									v2.value.Color = rainbowcolor
+								else
+									v2.value.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+								end
+							end
+						end
+				    end
+			
+					if (v.Character ~= nil and v.Character:FindFirstChild("HumanoidRootPart")) and TracerExists(v) == false then
+						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character["UpperTorso"].CFrame * CFrame.new(0, v.Character["UpperTorso"].Size.Y, 0).p);
+						if onScreen then
+							local Line = Drawing.new("Line")
+							Line.Visible = true
+							Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
+							Line.To = Vector2.new(vector.X, vector.Y)
+							if Main_Settings.visuals.rainbow then
+								Line.Color = rainbowcolor
+							else
+								Line.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+							end
+							Line.Thickness = 1
+							Line.Transparency = math.acos(Main_Settings.visuals.transparency) - 0.50
+	
+							local _Line = { value = Line, AssignedTo = v.Character }
+							table.insert(allTracers, _Line)
+						end
+				    end
+			    end
+		    end
+		end
+		
+		--Name ESP
+		if Main_Settings.visuals.nameesp then
+			for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
+				if v.Name == "nameE" then 
+					v:Destroy() 
+				end 
+			end
+			for i,v in pairs(game.Players:GetChildren()) do
+				if v.Team ~= game:GetService("Players").LocalPlayer.Team and v.Character:FindFirstChild("UpperTorso") then
+					local playerchar = v.Character
+					local billboard = Instance.new("BillboardGui")
+					billboard.Name = "nameE"
+					billboard.AlwaysOnTop = true
+					billboard.Size = UDim2.new(15,0,1,0)
+					billboard.StudsOffset = Vector3.new(0,5,0)
+					billboard.Adornee = playerchar:FindFirstChild("UpperTorso")
+					billboard.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+					
+					local Label = Instance.new('TextLabel')
+	                Label.BackgroundTransparency = 1
+	                Label.Size = UDim2.new(1,0,1,0)
+					if Main_Settings.visuals.rainbow then
+						Label.TextColor3 = rainbowcolor
+					else
+						Label.TextColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+					end
+	                Label.TextStrokeColor3 = Color3.fromRGB(27,42,53)
+	                Label.Font = 'SourceSans'
+	                Label.TextStrokeTransparency = .6
+	                Label.TextScaled = true
+	                Label.Text = v.Name
+	                Label.Parent = billboard
+                end
+			end
+		end
+		
+		--Crosshair
+		if Main_Settings.visuals.crosshair then
+            CrossLine1.Visible = true
+            CrossLine2.Visible = true
+            
+            if Main_Settings.visuals.rainbow then
+        		CrossLine2.Color = rainbowcolor
+        	else
+        		CrossLine2.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+        	end
+        	if Main_Settings.visuals.rainbow then
+        		CrossLine1.Color = rainbowcolor
+        	else
+        		CrossLine1.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+        	end
+		else
+            CrossLine1.Visible = false
+            CrossLine2.Visible = false
+		end
+		
 		--ESP
-		if visuals_boxespenabled then
-			for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
+		if Main_Settings.visuals.boxesp then
+			for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
 				if v.Name == "E" then 
 					v:Destroy() 
 				end 
 			end
-			for i,v in pairs(game.Workspace:GetChildren()) do
-				if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) and (game.Players[v.Name].Team ~= game.Players.LocalPlayer.Team) then
+			for i,v in pairs(game.Players:GetChildren()) do
+				if v.Team ~= game:GetService("Players").LocalPlayer.Team and v.Character:FindFirstChild("UpperTorso") then
+					local playerchar = v.Character
 					local billboard = Instance.new("BillboardGui")
 					billboard.Name = "E"
 					billboard.AlwaysOnTop = true
 					billboard.Size = UDim2.new(4, 0, 5.5, 0)
 					billboard.StudsOffset = Vector3.new(0, 0, 0)
-					billboard.Adornee = v["UpperTorso"]
-					billboard.Parent = game.CoreGui
+					billboard.Adornee = playerchar:FindFirstChild("UpperTorso")
+					billboard.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 					local f1 = Instance.new("Frame", billboard)
 					local f2 = Instance.new("Frame", billboard)
 					local f3 = Instance.new("Frame", billboard)
@@ -2128,139 +2369,78 @@ game:GetService('RunService').Stepped:Connect(function()
 					f2.BorderSizePixel = 0
 					f3.BorderSizePixel = 0
 					f4.BorderSizePixel = 0
-					if visuals_rainbow then
+					if Main_Settings.visuals.rainbow then
 						f1.BackgroundColor3 = rainbowcolor
 						f2.BackgroundColor3 = rainbowcolor
 						f3.BackgroundColor3 = rainbowcolor
 						f4.BackgroundColor3 = rainbowcolor
 					else
-						f1.BackgroundColor3 = visuals_color
-						f2.BackgroundColor3 = visuals_color
-						f3.BackgroundColor3 = visuals_color
-						f4.BackgroundColor3 = visuals_color
+						f1.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f2.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f3.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+						f4.BackgroundColor3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
 					end
-					f1.Size = UDim2.new(0, 1, 1, 0)
-					f2.Size = UDim2.new(0, 1, 1, 0)
-					f3.Size = UDim2.new(1, 0, 0, 1)
-					f4.Size = UDim2.new(1, 0, 0, 1)
+					f1.Transparency = visuals_transparency
+					f2.Transparency = visuals_transparency
+					f3.Transparency = visuals_transparency
+					f4.Transparency = visuals_transparency
+					f1.Size = UDim2.new(0, 2, 1, 0)
+					f2.Size = UDim2.new(0, 2, 1, 0)
+					f3.Size = UDim2.new(1, 0, 0, 2)
+					f4.Size = UDim2.new(1, 0, 0, 2)
 					f1.Position = UDim2.new(0, 0, 0, 0)
 					f2.Position = UDim2.new(1, -1, 0, 0)
 					f3.Position = UDim2.new(0, 0, 0, 0)
 					f4.Position = UDim2.new(0, 0, 1, -1)
-					f4.Name = "Bottom"
 				end
 			end
 		end
-
+		
 		--Chams
-		if visuals_chamsenabled then
-			for i,v in pairs(game.Workspace:GetChildren()) do
-				if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) and (game.Players[v.Name].Team ~= game.Players.LocalPlayer.Team) then
-					for i2,v2 in pairs(v:GetChildren()) do
-						if v2:IsA("BasePart") and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" and v2.Name ~= "Particle Area" and v2.Name ~= "Hitbox" then
-							local adornment = Instance.new("BoxHandleAdornment", v2)
-							adornment.AlwaysOnTop = true
-							adornment.Transparency = 0.3
-							adornment.Adornee = v2
-							adornment.ZIndex = 5
-							adornment.Size = v2.Size
-							if visuals_rainbow then
-								adornment.Color3 = rainbowcolor
-							else
-								adornment.Color3 = visuals_color
-							end
-						elseif v2:FindFirstChild("BoxHandleAdornment") then
-							local c = v2:FindFirstChild("BoxHandleAdornment")
-							c.Size = v2.Size
-							if visuals_rainbow then
-								c.Color3 = rainbowcolor
-							else
-								c.Color3 = visuals_color
-							end
+		if Main_Settings.visuals.chams then
+			for i,v in pairs(game.Players:GetChildren()) do
+				if v.Team == game:GetService("Players").LocalPlayer.Team then
+					for i2,v2 in pairs(v.Character:GetChildren()) do
+						if v2:FindFirstChild("BoxHandleAdornment") then
+							v2:FindFirstChild("BoxHandleAdornment"):Remove()
 						end
 					end
 				end
 			end
-		end
-
-		--Tracers
-		if visuals_tracersenabled then
-			for i8,v8 in pairs(game.Workspace:GetChildren()) do
-				if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) and (game.Players[v.Name].Team ~= game.Players.LocalPlayer.Team) then`
-					for i,v in pairs(allTracers) do
-						if v8:FindFirstChild(v.AssignedTo) ~= true then
-							pcall(function()
-								allTracers[i].value:Remove();
-							end)
-							allTracers[i] = nil
-						end
-						local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedTo.UpperTorso.CFrame * CFrame.new(0, v.AssignedTo.UpperTorso.Size.Y, 0).p);
-						if onScreen == false then
-							pcall(function()
-								allTracers[i].value:Remove();
-							end)
-							allTracers[i] = nil
-						end
-					end
-
-					for i,v in pairs(v8:GetChildren()) do
-						for i2,v2 in pairs(allTracers) do
-							if v2.AssignedTo == v then
-								local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.UpperTorso.CFrame * CFrame.new(0, v.UpperTorso.Size.Y, 0).p);
-								if onScreen then
-									v2.value.To = Vector2.new(vector.X, vector.Y)
-									if esp_rainbow then
-										v2.value.Color = rainbowcolor
-									else
-										v2.value.Color = esp_color
-									end
-								end
-							end
-						end
-
-						if TracerExists(v) == false then
-							local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.UpperTorso.CFrame * CFrame.new(0, v.UpperTorso.Size.Y, 0).p);
-							if onScreen then
-								local Line = Drawing.new("Line")
-								Line.Visible = true
-								Line.From = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y)
-								Line.To = Vector2.new(vector.X, vector.Y)
-								if esp_rainbow then
-									Line.Color = rainbowcolor
-								else
-									Line.Color = esp_color
-								end
-								Line.Thickness = 1
-								Line.Transparency = 1
-
-								local _Line = { value = Line, AssignedTo = v }
-								table.insert(allTracers, _Line)
-							end
-						end
-					end
-				else
-					for i,v in pairs(allTracers) do
+		
+			for i,v in pairs(game.Players:GetChildren()) do
+				if v.Team ~= game:GetService("Players").LocalPlayer.Team then
+					for i2,v2 in pairs(v.Character:GetChildren()) do
 						pcall(function()
-							allTracers[i].value:Remove();
+							if (v2.Name ~= "Hitbox" and v2.Name ~= "Particle Area" and v2.Name ~= "HeadHB") and (v2:IsA("BasePart") or (v2:IsA("Model") and v2:FindFirstChild("Slot1"))) and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
+								local adornment = Instance.new("BoxHandleAdornment", v2)
+								adornment.AlwaysOnTop = true
+								adornment.Transparency = visuals_transparency
+								adornment.Adornee = v2
+								adornment.ZIndex = 5
+								adornment.Size = v2.Size
+								if Main_Settings.visuals.rainbow then
+									adornment.Color3 = rainbowcolor
+								else
+									adornment.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+								end
+							elseif v2:FindFirstChild("BoxHandleAdornment") then
+								local c = v2:FindFirstChild("BoxHandleAdornment")
+		                        c.Size = v2.Size
+		                        c.Transparency = visuals_transparency
+								if Main_Settings.visuals.rainbow then
+									c.Color3 = rainbowcolor
+								else
+									c.Color3 = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
+								end
+							end
 						end)
-						allTracers[i] = nil
 					end
 				end
 			end
-		end
-
-	if visuals_boxespenabled == false then
-		for i,v in pairs(game:GetService("CoreGui"):GetChildren()) do 
-			if v.Name == "E" then 
-				v:Destroy() 
-			end 
-		end
-	end
-
-	if visuals_chamsenabled == false then 
-		for i,v in pairs(game.Workspace:GetChildren()) do
-			if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) then
-				for i2,v2 in pairs(v:GetChildren()) do
+		else
+			for i,v in pairs(game.Players:GetChildren()) do
+				for i2,v2 in pairs(v.Character:GetChildren()) do
 					if v2:FindFirstChild("BoxHandleAdornment") then
 						v2:FindFirstChild("BoxHandleAdornment"):Remove()
 					end
@@ -2268,27 +2448,225 @@ game:GetService('RunService').Stepped:Connect(function()
 			end
 		end
 	else
-		for i,v in pairs(game.Workspace:GetChildren()) do
-			if (v:FindFirstChild("HumanoidRootPart")) and (v.ClassName == "Model") and (containsinplayers(v.Name)) and (v ~= game.Players.LocalPlayer.Character) and (game.Players[v.Name].Team == game.Players.LocalPlayer.Team) then
-				for i2,v2 in pairs(v:GetChildren()) do
+		for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
+			if v.Name == "E" then 
+				v:Destroy() 
+			end 
+			if v.Name == "nameE" then
+			    v:Destroy()
+			end
+		end
+		
+		for i,v in pairs(game.Players:GetChildren()) do
+			if v.Character ~= nil then
+				for i2,v2 in pairs(v.Character:GetChildren()) do
 					if v2:FindFirstChild("BoxHandleAdornment") then
 						v2:FindFirstChild("BoxHandleAdornment"):Remove()
 					end
 				end
 			end
 		end
+		
+		for i,v in pairs(allTracers) do
+			pcall(function()
+				v.value:Remove();
+			end)
+			v = nil
+		end
+	end
+	
+	if Main_Settings.visuals.boxesp == false then
+		for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do 
+			if v.Name == "E" then 
+				v:Destroy() 
+			end 
+		end
+	end
+
+	if Main_Settings.visuals.tracers == false then
+		for i,v in pairs(allTracers) do
+			pcall(function()
+				v.value:Remove();
+			end)
+			v = nil
+		end
 	end
 
 	--Rainbow
-	if visuals_rainbow then
-		Visuals_ColorPicker:Set(rainbowcolor)
-		visuals_color = rainbowcolor
+	if Main_Settings.visuals.rainbow then
+		ESP_ColorPicker:Set(rainbowcolor)
+		esp_color = rainbowcolor
 	end
 	counter = counter + 0.0005
+end)
+
+--///////////////////////////////////////////////////////////////////////--
+--                                Aimbot                                 --
+--///////////////////////////////////////////////////////////////////////--
+
+local Aimbot_Window = Window:AddTab("Aimbot")
+
+	--Enabled
+local Aimbot_EnabledToggle = Aimbot_Window:AddSwitch("Enabled", function(bool)
+    Main_Settings.aimbot.enabled = bool
+end)
+Aimbot_EnabledToggle:Set(Main_Settings.aimbot.enabled)
+
+    --Wallcheck
+local Aimbot_WallcheckToggle = Aimbot_Window:AddSwitch("Wallcheck", function(bool)
+    Main_Settings.aimbot.wallcheck = bool
+end)
+Aimbot_WallcheckToggle:Set(Main_Settings.aimbot.wallcheck)
+
+	--AimAt
+local Aimbot_AimAtDropdown = Aimbot_Window:AddDropdown("Aim At", function(object)
+    if tostring(object) == "Head" then
+		Main_Settings.aimbot.aimat = "Head"
+		Main_Settings.aimbot.aimatrandom = false
+    elseif tostring(object) == "Torso" then
+		Main_Settings.aimbot.aimat = "Torso"
+		Main_Settings.aimbot.aimatrandom = false
+    elseif tostring(object) == "Random" then
+        Main_Settings.aimbot.aimat = ""
+		Main_Settings.aimbot.aimatrandom = true
+    end
+end)
+Aimbot_AimAtDropdown:Add("Head")
+Aimbot_AimAtDropdown:Add("Torso")
+Aimbot_AimAtDropdown:Add("Random")
+if Main_Settings.aimbot.aimatrandom then Aimbot_AimAtDropdown:Set("Random") else Aimbot_AimAtDropdown:Set(Main_Settings.aimbot.aimat) end
+    
+local Aimbot_Smoothness = Aimbot_Window:AddSlider("Aimbot Smoothness", function(trans)
+    pcall(function()
+        if trans ~= 0 then
+            Main_Settings.aimbot.smoothness = trans * 10
+        else
+            Main_Settings.aimbot.smoothness = 3
+        end
+    end)
+end, { 
+	["min"] = 0, 
+	["max"] = 10, 
+	["readonly"] = false,
+})
+Aimbot_Smoothness:Set(tonumber(Main_Settings.aimbot.smoothness))
+
+Aimbot_Window:AddLabel(" ")
+
+    --FOV
+local Aimbot_FovToggle = Aimbot_Window:AddSwitch("FOV Enabled", function(bool)
+	Main_Settings.aimbot.fov = bool
+end)
+Aimbot_FovToggle:Set(Main_Settings.aimbot.fov)
+
+    --Ignore FOV
+local Aimbot_IgnoreFovToggle = Aimbot_Window:AddSwitch("Ignore FOV", function(bool)
+	Main_Settings.aimbot.ignorefov = bool
+end)
+Aimbot_IgnoreFovToggle:Set(Main_Settings.aimbot.ignorefov)
+
+local fovradiusfix = false
+	--Fov Radius
+local Aimbot_FovRadiusSlider = Aimbot_Window:AddSlider("FOV Radius", function(x)
+	if fovradiusfix == true then
+	    Main_Settings.aimbot.fovradius = x
+	end
+end, { 
+	["min"] = 0, 
+	["max"] = 1000, 
+	["readonly"] = false,
+})
+Aimbot_FovRadiusSlider:Set(Main_Settings.aimbot.fovradius / 10)
+fovradiusfix = true
+
+local Aimbot_ENABLED = false
+
+local function WallChecker(p, ...)
+    local f = #game.Workspace.CurrentCamera:GetPartsObscuringTarget({p}, {game.Workspace.CurrentCamera, player.Character, ...})
+    if f == 0 or f == 1 then
+        return true
+    end
+    return false
+end
+
+local function GetClosestPlayer()
+	local closestdist = math.huge
+	local closestplr = nil
+	for _,plr in pairs(game.Players:GetChildren()) do
+		if plr.Team ~= game:GetService("Players").LocalPlayer.Team then
+			local f = game.Workspace.CurrentCamera:WorldToScreenPoint(plr.Character:FindFirstChild("Head").Position)
+			local f2 = Vector2.new(f.X, f.Y)
+			local mouseloc = Vector2.new(game:GetService("Players").LocalPlayer:GetMouse().X, game:GetService("Players").LocalPlayer:GetMouse().Y)
+			local v = (f2 - mouseloc).Magnitude
+			if v < closestdist then
+				closestdist = v
+				closestplr = plr
+			end
+		end
+	end
+
+	if closestplr ~= nil then
+		if closestplr.Character.Head ~= nil then
+			local f = game.Workspace.CurrentCamera:WorldToScreenPoint(closestplr.Character["Head"].Position)
+			local f2 = Vector2.new(f.X, f.Y)
+			local center = Vector2.new((game.Workspace.CurrentCamera.ViewportSize.X / 2), game.Workspace.CurrentCamera.ViewportSize.Y / 2)
+			local v = (f2 - center).Magnitude
+			if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false then
+			    if Main_Settings.aimbot.wallcheck then
+			        if WallChecker(closestplr.Character[Main_Settings.aimbot.aimat].Position, closestplr.Character) then
+				        if v <= Main_Settings.aimbot.fovradius then
+					        return closestplr
+				        end
+			        end
+			    else
+			        if v <= Main_Settings.aimbot.fovradius then
+				        return closestplr
+			        end
+			    end
+			else
+                if Main_Settings.aimbot.wallcheck then
+			        if WallChecker(closestplr.Character[Main_Settings.aimbot.aimat].Position, closestplr.Character) then
+					    return closestplr
+			        end
+			    else
+				    return closestplr
+			    end
+			end
+		end
+	end
+	return false
+end
+
+game:GetService("Players").LocalPlayer:GetMouse().Button2Up:connect(function(KEY)
+    Aimbot_ENABLED = false
+end)
+
+game:GetService("Players").LocalPlayer:GetMouse().Button2Down:connect(function(KEY)
+	Aimbot_ENABLED = true
+	if Main_Settings.aimbot.aimatrandom then
+		local number = math.random(1, 5)
+		if number == 1 or number == 2 or number == 3 then
+			Main_Settings.aimbot.aimat = "Torso"
+		elseif number == 4 or number == 5 then
+			Main_Settings.aimbot.aimat = "Head"
+		end
+	end
+end)
+
+game:GetService('RunService').Heartbeat:connect(function()
+    if Aimbot_ENABLED and Main_Settings.aimbot.enabled then 
+		local Target = GetClosestPlayer()
+		if Target then
+			local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(Target.Character[Main_Settings.aimbot.aimat].Position)
+			local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(game:GetService("Players").LocalPlayer:GetMouse().Hit.p)
+			local incrementX, incrementY = (aimAt.X - mouseLocation.X) / Main_Settings.aimbot.smoothness, (aimAt.Y - mouseLocation.Y) / Main_Settings.aimbot.smoothness
+			
+            mousemoverel(incrementX, incrementY)
+		end
+    end
 end)
 
 
 
 
-Visuals_Window:Show()
 library:FormatWindows()
