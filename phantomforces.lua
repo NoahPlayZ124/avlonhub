@@ -2266,7 +2266,7 @@ if Drawing and getgc and writefile and readfile then
 	FOVCircle.Visible = false
 	FOVCircle.Radius = 200
 	FOVCircle.Thickness = 0.1
-	FOVCircle.NumSides = 12
+	FOVCircle.NumSides = 1000
 	FOVCircle.Filled = false
 	FOVCircle.Position = Vector2.new(game.Workspace.CurrentCamera.ViewportSize.X / 2, game.Workspace.CurrentCamera.ViewportSize.Y / 2)
 	local allTracers = { }
