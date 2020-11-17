@@ -19,5 +19,5 @@ if game.PlaceId == 292439477 or game.PlaceId == 299659045 or game.PlaceId == 286
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Spoorloos/avlonhub/master/arsenal.lua", true))()
     end
 else
-  game.Players.LocalPlayer:Kick("\n\n\n\nWe do not support this game!\n\nSupported Games:\n- Phantom Forces\n- Arsenal\n\n\n\n")
+	game.Players.LocalPlayer:Kick("\n\n\n\nWe do not support this game!\n\nSupported Games:\n- Phantom Forces\n- Arsenal\n\n\n\n")
 end
