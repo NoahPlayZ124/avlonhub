@@ -2457,10 +2457,10 @@ if Drawing and getgc and writefile and readfile then
 					f2.Transparency = visuals_transparency
 					f3.Transparency = visuals_transparency
 					f4.Transparency = visuals_transparency
-					f1.Size = UDim2.new(0, 1, 1, 0)
-					f2.Size = UDim2.new(0, 1, 1, 0)
-					f3.Size = UDim2.new(1, 0, 0, 1)
-					f4.Size = UDim2.new(1, 0, 0, 1)
+					f1.Size = UDim2.new(0, 2, 1, 0)
+					f2.Size = UDim2.new(0, 2, 1, 0)
+					f3.Size = UDim2.new(1, 0, 0, 2)
+					f4.Size = UDim2.new(1, 0, 0, 2)
 					f1.Position = UDim2.new(0, 0, 0, 0)
 					f2.Position = UDim2.new(1, -1, 0, 0)
 					f3.Position = UDim2.new(0, 0, 0, 0)
