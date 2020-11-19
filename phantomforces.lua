@@ -2803,20 +2803,29 @@ end)
 		if closestplr ~= nil then if closestplr:FindFirstChild("Head") then return closestplr end end
 		return false
 	end
+	
+	local function HeadshotOrNot()
+        local r = math.random(1,100)
+        local add = 0
+        local item
+        for i,v in pairs({Head = tonumber(Main_Settings.aimbot.headshotchance), Torso = 100 - tonumber(Main_Settings.aimbot.headshotchance)}) do
+            if (r > add) and r <= (add + v) then
+                item = i
+            end
+            add = add + v
+        end
+        return item
+	end
     
     MOUSE.Button2Up:connect(function(KEY)
         Aimbot_ENABLED = false
     end)
     
+    local currentshootat = "Head"
 	MOUSE.Button2Down:connect(function(KEY)
 		Aimbot_ENABLED = true
 		if Main_Settings.aimbot.aimatrandom then
-			local number = math.random(1, 5)
-			if number == 1 or number == 2 or number == 3 then
-				Main_Settings.aimbot.aimat = "Torso"
-			elseif number == 4 or number == 5 then
-				Main_Settings.aimbot.aimat = "Head"
-			end
+			currentshootat = tostring(HeadshotOrNot())
 		end
 	end)
 
@@ -2824,7 +2833,14 @@ end)
         if Aimbot_ENABLED and Main_Settings.aimbot.enabled then 
 			local Target = GetClosestPlayer()
 			if Target then
-				local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(Target[Main_Settings.aimbot.aimat].Position)
+			    local aimAtpart = Target["Head"]
+			    if Main_Settings.aimbot.aimatrandom then
+			        aimAtpart = Target[tostring(currentshootat)]
+			    else
+			        aimAtpart = Target[tostring(Main_Settings.aimbot.aimat)]
+			    end
+			    local aimAt = game.workspace.CurrentCamera:WorldToScreenPoint(aimAtpart.Position)
+
 				local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
 				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / Main_Settings.aimbot.smoothness, (aimAt.Y - mouseLocation.Y) / Main_Settings.aimbot.smoothness
 				
@@ -3174,19 +3190,6 @@ end)
 			end
 		end)
 	end)
-
-    local function HeadshotOrNot()
-        local r = math.random(1,100)
-        local add = 0
-        local item
-        for i,v in pairs({Head = Main_Settings.aimbot.headshotchange, Torso = 100 - Main_Settings.aimbot.headshotchange}) do
-            if (r > add) and r <= (add + v) then
-                item = i
-            end
-            add = add + v
-        end
-        return item
-    end
 	
 	--No Fall Damage (Script)
 	local network;
@@ -3221,13 +3224,17 @@ end)
         elseif string.find(args[1]:lower(), "bullethit") then
         	if args[4] ~= nil then
         	    if not Main_Settings.aimbot.aimatrandom then
-            	    if Main_Settings.aimbot.aimat == "Head" then
+            	    if (Main_Settings.aimbot.aimatrandom and Main_Settings.aimbot.headshotchange == 100) or Main_Settings.aimbot.aimat == "Head" then
             	        args[4] = args[4].Parent:FindFirstChild("Head")
-            	    elseif Main_Settings.aimbot.aimat == "Torso" then
+            	    elseif (Main_Settings.aimbot.aimatrandom and Main_Settings.aimbot.headshotchange == 0) or Main_Settings.aimbot.aimat == "Torso" then
             	        args[4] = args[4].Parent:FindFirstChild("Torso")
             	    end
-    		    elseif Main_Settings.aimbot.aimatrandom then
-    		        args[4] = args[4].Parent:FindFirstChild(tostring(HeadshotOrNot()))
+        	    elseif Main_Settings.aimbot.aimatrandom then
+		            if tostring(currentshootat) == "Head" then 
+		                args[4] = args[4].Parent:FindFirstChild("Head")
+		            else
+		                args[4] = args[4].Parent:FindFirstChild("Torso")
+		            end
     		    end
         	end
         	return old(self, unpack(args))
