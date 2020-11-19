@@ -1372,7 +1372,7 @@ if Drawing and getgc and writefile and readfile then
 										Held = false
 									end
 								end)
-	
+
 								function slider_data:Set(new_value)
 									new_value = tonumber(new_value) or 0
 									new_value = (((new_value >= 0 and new_value <= 100) and new_value) / 100)
@@ -2081,6 +2081,7 @@ if Drawing and getgc and writefile and readfile then
 			wallcheck = false,
 			aimat = "Head",
 			aimatrandom = false,
+			headshotchance = 50,
 			smoothness = 10,
 			autoshoot = false,
 			fov = false,
@@ -2096,7 +2097,6 @@ if Drawing and getgc and writefile and readfile then
 			rapidfire = false,
 			instantknife = false,
 			grenadetp = false,
-			autoheadshot = false,
 			firerate = 43
 		},
 		mods2 = {
@@ -2637,30 +2637,55 @@ end)
     end)
     Aimbot_AutoShootToggle:Set(Main_Settings.aimbot.autoshoot)
 
+    local Aimbot_HeadshotChance, Aimbot_HeadshotChanceSlider
+
         --AimAt
     local Aimbot_AimAtDropdown = Aimbot_Window:AddDropdown("Aim At", function(object)
         if tostring(object) == "Head" then
 			Main_Settings.aimbot.aimat = "Head"
 			Main_Settings.aimbot.aimatrandom = false
+			Aimbot_HeadshotChanceSlider.Visible = false
         elseif tostring(object) == "Torso" then
 			Main_Settings.aimbot.aimat = "Torso"
 			Main_Settings.aimbot.aimatrandom = false
+			Aimbot_HeadshotChanceSlider.Visible = false
         elseif tostring(object) == "Random" then
 	        Main_Settings.aimbot.aimat = ""
 			Main_Settings.aimbot.aimatrandom = true
+			Aimbot_HeadshotChanceSlider.Visible = true
         end
     end)
     Aimbot_AimAtDropdown:Add("Head")
 	Aimbot_AimAtDropdown:Add("Torso")
 	Aimbot_AimAtDropdown:Add("Random")
 	if Main_Settings.aimbot.aimatrandom then Aimbot_AimAtDropdown:Set("Random") else Aimbot_AimAtDropdown:Set(Main_Settings.aimbot.aimat) end
-	    
+	 
+	local headshotchancesliderfix = false   
+	Aimbot_HeadshotChance, Aimbot_HeadshotChanceSlider = Aimbot_Window:AddSlider("Headshot Chance", function(trans)
+	    pcall(function()
+    	    if headshotchancesliderfix then
+                Main_Settings.aimbot.headshotchance = trans
+    	    end 
+        end)
+	end, { 
+		["min"] = 0, 
+		["max"] = 100, 
+		["readonly"] = false,
+    })
+    if Main_Settings.aimbot.headshotchance == nil then Main_Settings.aimbot.headshotchance = 50 end
+    Aimbot_HeadshotChance:Set(tonumber(Main_Settings.aimbot.headshotchance))
+    Aimbot_HeadshotChanceSlider.Visible = Main_Settings.aimbot.aimatrandom
+    headshotchancesliderfix = true
+    
+    local smoothnesssliderfix = false   
     local Aimbot_Smoothness = Aimbot_Window:AddSlider("Aimbot Smoothness", function(trans)
         pcall(function()
-            if trans ~= 0 then
-                Main_Settings.aimbot.smoothness = trans * 10
-            else
-                Main_Settings.aimbot.smoothness = 3
+            if smoothnesssliderfix then
+                if trans ~= 0 then
+                    Main_Settings.aimbot.smoothness = trans * 10
+                else
+                    Main_Settings.aimbot.smoothness = 3
+                end
             end
         end)
 	end, { 
@@ -2669,7 +2694,8 @@ end)
 		["readonly"] = false,
     })
     Aimbot_Smoothness:Set(tonumber(Main_Settings.aimbot.smoothness))
-
+    smoothnesssliderfix = true
+    
     Aimbot_Window:AddLabel(" ")
 
         --FOV
@@ -3109,12 +3135,6 @@ end)
 	end)
 	Mods_GrenadeTPToggle:Set(Main_Settings.mods1.grenadetp)
 	
-		--AutoHeadshot
-	local Mods_AutoHeadshotToggle = Mods_Window:AddSwitch("Auto Headshot", function(bool)
-	    Main_Settings.mods1.autoheadshot = bool
-	end)
-	Mods_AutoHeadshotToggle:Set(Main_Settings.mods1.autoheadshot)
-	
 	local fireratefix = false
 		--FireRate
 	local Mods_FireRateSlider = Mods_Window:AddSlider("Fire Rate", function(x)
@@ -3154,6 +3174,19 @@ end)
 			end
 		end)
 	end)
+
+    local function HeadshotOrNot()
+        local r = math.random(1,100)
+        local add = 0
+        local item
+        for i,v in pairs({Head = Main_Settings.aimbot.headshotchange, Torso = 100 - Main_Settings.aimbot.headshotchange}) do
+            if (r > add) and r <= (add + v) then
+                item = i
+            end
+            add = add + v
+        end
+        return item
+    end
 	
 	--No Fall Damage (Script)
 	local network;
@@ -3187,7 +3220,15 @@ end)
             return old(self, unpack(args))
         elseif string.find(args[1]:lower(), "bullethit") and Main_Settings.mods1.autoheadshot then
         	if args[4] ~= nil then
-        		args[4] = args[4].Parent:FindFirstChild("Head")
+        	    if not Main_Settings.aimbot.aimatrandom then
+            	    if Main_Settings.aimbot.aimat == "Head" then
+            	        args[4] = args[4].Parent:FindFirstChild("Head")
+            	    elseif Main_Settings.aimbot.aimat == "Torso" then
+            	        args[4] = args[4].Parent:FindFirstChild("Torso")
+            	    end
+    		    elseif Main_Settings.aimbot.aimatrandom then
+    		        args[4] = args[4].Parent:FindFirstChild(tostring(HeadshotOrNot()))
+    		    end
         	end
         	return old(self, unpack(args))
 		else
