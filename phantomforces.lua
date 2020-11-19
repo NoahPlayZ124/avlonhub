@@ -2844,7 +2844,11 @@ end)
 				local mouseLocation = game.workspace.CurrentCamera:WorldToScreenPoint(MOUSE.Hit.p)
 				local incrementX, incrementY = (aimAt.X - mouseLocation.X) / Main_Settings.aimbot.smoothness, (aimAt.Y - mouseLocation.Y) / Main_Settings.aimbot.smoothness
 				
-                mousemoverel(incrementX, incrementY)
+				if (isrbxactive) and isrbxactive() then
+				    mousemoverel(incrementX, incrementY)
+				elseif isrbxactive == nil then
+				    mousemoverel(incrementX, incrementY)
+				end
 			end
         end
     end)
