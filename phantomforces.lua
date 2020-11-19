@@ -2659,7 +2659,7 @@ end)
 	Aimbot_AimAtDropdown:Add("Torso")
 	Aimbot_AimAtDropdown:Add("Random")
 	if Main_Settings.aimbot.aimatrandom then Aimbot_AimAtDropdown:Set("Random") else Aimbot_AimAtDropdown:Set(Main_Settings.aimbot.aimat) end
-	 
+	
 	local headshotchancesliderfix = false   
 	Aimbot_HeadshotChance, Aimbot_HeadshotChanceSlider = Aimbot_Window:AddSlider("Headshot Chance", function(trans)
 	    pcall(function()
@@ -3218,7 +3218,7 @@ end)
 	            end
 		    end
             return old(self, unpack(args))
-        elseif string.find(args[1]:lower(), "bullethit") and Main_Settings.mods1.autoheadshot then
+        elseif string.find(args[1]:lower(), "bullethit") then
         	if args[4] ~= nil then
         	    if not Main_Settings.aimbot.aimatrandom then
             	    if Main_Settings.aimbot.aimat == "Head" then
