@@ -4,11 +4,9 @@
     by Singularity (V3rm @ King Singularity) (Discord @ Singularity#5490)
 --]]
 
-local loaded = false
-
-local sirhurt = false
-if (identifyexecutor ~= nil) and string.find(identifyexecutor():lower(), "sirhurt") then
-    sirhurt = true
+do
+    local imgui = game:GetService("CoreGui"):FindFirstChild("imgui") or game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
+    if imgui then imgui:Destroy() end
 end
 
 local ui_options = {
@@ -17,34 +15,6 @@ local ui_options = {
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
 }
-
-do
-    local imgui = game:GetService("CoreGui"):FindFirstChild("imgui") or game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("imgui")
-    if imgui then imgui:Destroy() end
-end
-
-local CurrentTexts = { }
-local function WriteToConsole(message)
-    local Msg = game.ReplicatedStorage.Misc.Msger
-    local Message = Msg:Clone()
-    local MTag = Message.Tag
-    local Offset = 5
-    Message.Parent = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui").ChatGame.GlobalChat
-    Message.Text = "AvlonHub "
-    Message.TextColor3 = Color3.new(0, 0.6, 1)
-    table.insert(CurrentTexts, Message)
-    Message.Msg.Text = message
-    Message.Msg.Position = UDim2.new(0, Message.TextBounds.x, 0, 0)
-    Message.Visible = true
-    Message.Msg.Visible = true
-end
-
-local getbodyparts = nil
-for i, v in pairs(getgc(true)) do
-    if typeof(v) == 'table' and rawget(v, 'getbodyparts') then
-        getbodyparts = v["getbodyparts"]
-    end
-end
 
 local imgui = Instance.new("ScreenGui")
 local Prefabs = Instance.new("Frame")
