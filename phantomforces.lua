@@ -552,7 +552,6 @@ if Drawing and getgc and writefile and readfile then
     			    for i,v in pairs(allESPs) do
     					if (gethealth(v.AssignedTo)["alive"] ~= nil) and not gethealth(v.AssignedTo)["alive"] then
     						pcall(function()
-    						    print("de")
     						    v.RemoveLines()
     						end)
     						allESPs[i] = nil
