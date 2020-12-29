@@ -437,21 +437,23 @@ if Drawing and getgc and writefile and readfile then
 		    
 		    --Name ESP
 			if Main_Settings.visuals.nameesp then
-				for i,v in pairs(allNameESPs) do
-					if (gethealth(v.AssignedTo)["alive"] ~= nil) and not gethealth(v.AssignedTo)["alive"] then
-						pcall(function()
-							allNameESPs[i].value:Remove();
-						end)
-						allNameESPs[i] = nil
-					end
-					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedToBody.Torso.CFrame * CFrame.new(0, v.AssignedToBody.Torso.Size.Y, 0).p);
-					if onScreen == false then
-						pcall(function()
-							allNameESPs[i].value:Remove();
-						end)
-						allNameESPs[i] = nil
-					end
-				end
+			    pcall(function()
+    				for i,v in pairs(allNameESPs) do
+    					if (gethealth(v.AssignedTo)["alive"] ~= nil) and not gethealth(v.AssignedTo)["alive"] then
+    						pcall(function()
+    							allNameESPs[i].value:Remove();
+    						end)
+    						allNameESPs[i] = nil
+    					end
+    					local vector, onScreen = game.Workspace.CurrentCamera:WorldToViewportPoint(v.AssignedToBody.Torso.CFrame * CFrame.new(0, v.AssignedToBody.Torso.Size.Y, 0).p);
+    					if onScreen == false then
+    						pcall(function()
+    							allNameESPs[i].value:Remove();
+    						end)
+    						allNameESPs[i] = nil
+    					end
+    				end
+				end)
 				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
 				    if getbodyparts and v and not NameESPExists(v) and getbodyparts(v) and rawget(getbodyparts(v), "rootpart") and v ~= game:GetService("Players").LocalPlayer and v.Team.Name ~= game:GetService("Players").LocalPlayer.Team.Name and gethealth(v)["alive"] ~= false then
     					local playerchar = getbodyparts(v)["rootpart"].Parent
@@ -546,17 +548,25 @@ if Drawing and getgc and writefile and readfile then
 		    
 			--ESP
 			if Main_Settings.visuals.boxesp then
-			    for i,v in pairs(allESPs) do
-			        if (getbodyparts) and v and getbodyparts(v["AssignedTo"]) == nil and gethealth(v)["alive"] ~= true then
-    					for i2,v2 in pairs(v["Lines"]) do
-    					    pcall(function()
-    					        v2:Remove()
-    					    end)
+			    pcall(function()
+    			    for i,v in pairs(allESPs) do
+    					if (gethealth(v.AssignedTo)["alive"] ~= nil) and not gethealth(v.AssignedTo)["alive"] then
+    						pcall(function()
+    						    print("de")
+    						    v.RemoveLines()
+    						end)
+    						allESPs[i] = nil
     					end
-        				allESPs[i] = nil
-			        end
-			    end
-			    
+    					local vector, onScreen = game.Workspace.CurrentCamera:WorldToScreenPoint(v.AssignedToBody:FindFirstChild("Head").Position)
+    					if onScreen == false then
+    						pcall(function()
+    						    v.RemoveLines()
+    						end)
+    						allESPs[i] = nil
+    					end
+    			    end
+    			end)
+				wait()
 				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
 				    if ESPExists(v) == false and getbodyparts and (v) and getbodyparts(v) and gethealth(v)["alive"] ~= false then
                         local playerchar = getbodyparts(v)
@@ -620,7 +630,13 @@ if Drawing and getgc and writefile and readfile then
         					
         					table.insert(allESPs, { 
 								AssignedTo = v,
-								AssignedToBody = playerchar,
+								AssignedToBody = playerchar.rootpart.Parent,
+								RemoveLines = function() 
+								    f1:Remove()
+								    f2:Remove()
+								    f3:Remove()
+								    f4:Remove()
+							    end,
     					        Lines = {
             					    f1,
             					    f2,
@@ -661,8 +677,6 @@ if Drawing and getgc and writefile and readfile then
                                         v2["Lines"][1].To = Vector2.new(line2loc.X, line2loc.Y)
                                         v2["Lines"][1].Transparency = roundNumber(Main_Settings.visuals.transparency, 1)
                                         v2["Lines"][1].Thickness = 1
-                    				else
-                    				    v2["Lines"][1].Visible = false
                     				end
                 					if Visible2 then
                                         v2["Lines"][2].Visible = true
@@ -671,8 +685,6 @@ if Drawing and getgc and writefile and readfile then
                                         v2["Lines"][2].To = Vector2.new(line4loc.X, line4loc.Y)
                                         v2["Lines"][2].Transparency = roundNumber(Main_Settings.visuals.transparency, 1)
                                         v2["Lines"][2].Thickness = 1
-                    				else
-                    				    v2["Lines"][2].Visible = false
                     				end
                 					if Visible3 then
                                         v2["Lines"][3].Visible = true
@@ -681,8 +693,6 @@ if Drawing and getgc and writefile and readfile then
                                         v2["Lines"][3].To = Vector2.new(line1loc.X, line1loc.Y)
                                         v2["Lines"][3].Transparency = roundNumber(Main_Settings.visuals.transparency, 1)
                                         v2["Lines"][3].Thickness = 1
-                    				else
-                    				    v2["Lines"][3].Visible = false
                     				end
                 					if Visible4 then
                                         v2["Lines"][4].Visible = true
@@ -691,15 +701,11 @@ if Drawing and getgc and writefile and readfile then
                                         v2["Lines"][4].To = Vector2.new(line3loc.X, line3loc.Y)
                                         v2["Lines"][4].Transparency = roundNumber(Main_Settings.visuals.transparency, 1)
                                         v2["Lines"][4].Thickness = 1
-                    				else
-                    				    v2["Lines"][4].Visible = false
                 					end
             				    else
-                					for i3,v3 in pairs(v2["Lines"]) do
-                					    pcall(function()
-                					        v2:Remove()
-                					    end)
-                					end
+            					    pcall(function()
+            					        v2.RemoveLines()
+            					    end)
                     				allESPs[i2] = nil
             				    end
                             end
@@ -709,11 +715,9 @@ if Drawing and getgc and writefile and readfile then
 			else
 				for i,v in pairs(allESPs) do 
 					if v["Lines"] and v["Lines"][1] then
-						for i2,v2 in pairs(v["Lines"]) do
-							pcall(function()
-								v2:Remove()
-							end)
-						end
+		            	pcall(function()
+					        v.RemoveLines()
+					    end)
 						allESPs[i] = nil
 					end
 				end
@@ -829,11 +833,9 @@ if Drawing and getgc and writefile and readfile then
 			
 			for i,v in pairs(allESPs) do 
 				if v["Lines"] and v["Lines"][1] then
-					for i2,v2 in pairs(v["Lines"]) do
-						pcall(function()
-							v2:Remove()
-						end)
-					end
+	            	pcall(function()
+				        v.RemoveLines()
+				    end)
 					allESPs[i] = nil
 				end
 			end
@@ -842,11 +844,9 @@ if Drawing and getgc and writefile and readfile then
 		if Main_Settings.visuals.boxesp == false then
 			for i,v in pairs(allESPs) do 
 				if v["Lines"] and v["Lines"][1] then
-					for i2,v2 in pairs(v["Lines"]) do
-						pcall(function()
-							v2:Remove()
-						end)
-					end
+	            	pcall(function()
+				        v.RemoveLines()
+				    end)
 					allESPs[i] = nil
 				end
 			end
@@ -1678,7 +1678,6 @@ if Drawing and getgc and writefile and readfile then
 					args[3]["blowuptime"] = 0.007
 					for i,v in pairs(args[3]["frames"]) do
 						v["p0"] = erferfergfwf:FindFirstChild("Head").Position
-						print(v["p0"], erferfergfwf:FindFirstChild("Head").Position)
 					end
 				end
 				return old(self, unpack(args))
@@ -1716,7 +1715,7 @@ if Drawing and getgc and writefile and readfile then
 				args[2]["camerapos"] = camera.basecframe.Position
 
 				for i,v in pairs(args[2]["bullets"]) do
-					local tra = trajectory(camera.basecframe.Position, Vector3.new(0, game.Workspace.Gravity, 0), targetbody[aimatpart5].Position, gamelogic.currentgun.data.bulletspeed)
+					local tra, tra2 = trajectory(camera.basecframe.Position, Vector3.new(0, game.Workspace.Gravity, 0), targetbody[aimatpart5].Position, gamelogic.currentgun.data.bulletspeed)
 					if tra then
 						v[1] = tra
 					end
