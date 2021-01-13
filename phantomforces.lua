@@ -26,7 +26,7 @@ if Drawing and getgc and writefile and readfile then
 			autoshoot = false,
 			fov = false,
 			fovradius = 200,
-			fovsides = 1000,
+			fovsides = 50,
 			ignorefov = false,
 			fovfilled = false
 		},
@@ -56,6 +56,11 @@ if Drawing and getgc and writefile and readfile then
 		    bullettracers = {255, 0, 0, false},
 		    bulletimpact = {255, 0, 0, false},
 		    crosshair = {255, 0, 0, false}
+		},
+		player = {
+		    freezeongameend = false,
+		    alwaysspawn = false,
+		    cameraoffset = {0.69999998807907 -1 -1.2999999523163},
 		},
 		other = {
 			walkspeed = 15,
@@ -356,7 +361,7 @@ if Drawing and getgc and writefile and readfile then
 	    end
 	    
 	    local fovclr = Color3.new(Main_Settings.colors.fov[1], Main_Settings.colors.fov[2], Main_Settings.colors.fov[3])
-	    if Main_Settings.colors.crosshair[4] then
+	    if Main_Settings.colors.fov[4] then
 	        fovclr = rainbowcolor
 	    end
 	    
@@ -1493,7 +1498,7 @@ if Drawing and getgc and writefile and readfile then
 	end, { ["enabled"] = Main_Settings.mods1.grenadetp })
 	
 		--Knife Aura
-	local Mods_KnifeAuraToggle = Mods_Sector:Cheat("Checkbox", "Knife Aura (Equip a knife!)", function(bool)
+	local Mods_KnifeAuraToggle = Mods_Sector:Cheat("Checkbox", "Knife Aura", function(bool)
 	    Main_Settings.mods1.knifeaura = bool
 	end, { ["enabled"] = Main_Settings.mods1.knifeaura })
     
@@ -1812,24 +1817,97 @@ if Drawing and getgc and writefile and readfile then
 	
 	game:GetService("RunService").RenderStepped:connect(function()
         if game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and Main_Settings.mods1.knifeaura then
-            if (gamelogic.currentgun) and gamelogic.currentgun.type == "KNIFE" then
-                local pos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-                for i, player in next, game:GetService("Players"):GetPlayers() do
-                    local playerchar = getbodyparts(player)
-                    if player ~= game:GetService("Players").LocalPlayer and player.Team ~= game:GetService("Players").LocalPlayer.Team and playerchar and rawget(playerchar, "rootpart") then
-                        local root = playerchar.rootpart;
-                        if root then
-                            local distance = math.floor((pos - root.Position).magnitude)
-                            if distance <= 50 then
-                                network.send(self, "knifehit", player, tick(), playerchar.rootpart.Parent.Head)
-                            end
+            local pos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
+            for i, player in next, game:GetService("Players"):GetPlayers() do
+                local playerchar = getbodyparts(player)
+                if player ~= game:GetService("Players").LocalPlayer and player.Team ~= game:GetService("Players").LocalPlayer.Team and playerchar and rawget(playerchar, "rootpart") then
+                    local root = playerchar.rootpart;
+                    if root then
+                        local distance = math.floor((pos - root.Position).magnitude)
+                        if distance <= 17 then
+                            network.send(self, "knifehit", player, tick(), playerchar.rootpart.Parent.Head)
                         end
                     end
                 end
             end
         end
-    end)
+	end)
+
+	--///////////////////////////////////////////////////////////////////////--
+	--                               Player                                  --
+	--///////////////////////////////////////////////////////////////////////--
 	
+	local Player_Catagory = Window:Category("Player")
+	local Player_Sector = Player_Catagory:Sector("Player")
+
+	local Player_FreezeOnGameEnd = Player_Sector:Cheat("Checkbox", "Don't freeze on game end", function(bool)
+		Main_Settings.player.freezeongameend = bool
+	end, { ["enabled"] = Main_Settings.player.freezeongameend})
+	
+	local Player_FreezeOnGameEnd = Player_Sector:Cheat("Checkbox", "Always Spawn", function(bool)
+		Main_Settings.player.alwaysspawn = bool
+	end, { ["enabled"] = Main_Settings.player.alwaysspawn})
+	
+	game:GetService("RunService").Heartbeat:Connect(function()
+	    if Main_Settings.player.freezeongameend == true then
+	        game:GetService("ReplicatedStorage").ServerSettings.ShowResults.Value = false
+        end
+	    if Main_Settings.player.alwaysspawn == true then
+	         game:GetService("ReplicatedStorage").ServerSettings.AllowSpawn.Value = true
+	    end
+	end)
+	
+	local camoffset_Sector = Player_Catagory:Sector("Camera Offset")
+	
+	    --X
+	local Player_XSlider = camoffset_Sector:Cheat("Slider", "X", function(x)
+	    if loaded then
+    		Main_Settings.player.cameraoffset = {x, Main_Settings.player.cameraoffset.Y, Main_Settings.player.cameraoffset.Z}
+	    end
+	end, {
+        ["default"] = Main_Settings.player.cameraoffset[1],
+		["min"] = -10,
+		["max"] = 10,
+		["suffix"] = " X",
+	})
+	
+	    --Y
+	local Player_YSlider = camoffset_Sector:Cheat("Slider", "Y", function(x)
+	    if loaded then
+    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset.X, x, Main_Settings.player.cameraoffset.Z}
+	    end
+	end, {
+        ["default"] = Main_Settings.player.cameraoffset[2],
+		["min"] = -10,
+		["max"] = 10,
+		["suffix"] = " Y",
+	})
+	
+	    --Z
+	local Player_ZSlider = camoffset_Sector:Cheat("Slider", "Z", function(x)
+	    if loaded then
+    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset.X, Main_Settings.player.cameraoffset.Y, x}
+	    end
+	end, {
+        ["default"] = Main_Settings.player.cameraoffset[3],
+		["min"] = -10,
+		["max"] = 10,
+		["suffix"] = " Z",
+	})
+	
+	
+	game:GetService("RunService").RenderStepped:connect(function()
+	    if gamelogic.currentgun then
+	        gamelogic.currentgun.data.mainoffset = CFrame.new(Main_Settings.player.cameraoffset[1], Main_Settings.player.cameraoffset[2], Main_Settings.player.cameraoffset[3])
+	    end
+    	for i,v in pairs(game.ReplicatedStorage:FindFirstChild("GunModules"):GetChildren()) do
+	        local gun = require(v)
+	        if gun["mainoffset"] then
+	            gun["mainoffset"] = CFrame.new(Main_Settings.player.cameraoffset[1], Main_Settings.player.cameraoffset[2], Main_Settings.player.cameraoffset[3])
+	        end
+	    end
+	end)
+
 	--///////////////////////////////////////////////////////////////////////--
 	--                               Colors                                  --
 	--///////////////////////////////////////////////////////////////////////--
