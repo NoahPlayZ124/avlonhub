@@ -9,11 +9,10 @@ if Drawing and getgc and writefile and readfile then
 			chams = false,
 			tracers = false,
 			bullettracers = false,
+			bulletimpact = false,
 			crosshair = false,
 			grenadeesp = false,
 			transparency = 0.5,
-			visualscolor = {0.980000019073486328125, 0.9900000095367431640625, 1},
-			visualsrainbow = true
 		},
 		aimbot = {
 			enabled = false,
@@ -27,13 +26,14 @@ if Drawing and getgc and writefile and readfile then
 			autoshoot = false,
 			fov = false,
 			fovradius = 200,
+			fovsides = 1000,
 			ignorefov = false,
 			fovfilled = false
 		},
 		mods1 = {
 			norecoil = false,
 			instantreload = false,
-			noreload,
+			noreload = false,
 			nofalldamage = false,
 			nospread = false,
 			rapidfire = false,
@@ -47,6 +47,15 @@ if Drawing and getgc and writefile and readfile then
 			allauto = false,
 			hidefromradar = false,
 			nosway = false
+		},
+		colors = {
+		    boxesp = {255, 0, 0, false},
+		    chams = {255, 0, 0, false},
+		    tracers = {255, 0, 0, false},
+		    fov = {255, 0, 0, false},
+		    bullettracers = {255, 0, 0, false},
+		    bulletimpact = {255, 0, 0, false},
+		    crosshair = {255, 0, 0, false}
 		},
 		other = {
 			walkspeed = 15,
@@ -237,6 +246,10 @@ if Drawing and getgc and writefile and readfile then
 		Main_Settings.visuals.bullettracers = bool
 	end, { ["enabled"] = Main_Settings.visuals.bullettracers })
 	
+	local ESP_BulletImpactToggle = ESP_Sector:Cheat("Checkbox", "Bullet Impact", function(bool)
+		Main_Settings.visuals.bulletimpact = bool
+	end, { ["enabled"] = Main_Settings.visuals.bulletimpact })
+	
 	local ESP_CrosshairToggle = ESP_Sector:Cheat("Checkbox", "Crosshair", function(bool)
 		Main_Settings.visuals.crosshair = bool
 	end, { ["enabled"] = Main_Settings.visuals.crosshair })
@@ -245,9 +258,7 @@ if Drawing and getgc and writefile and readfile then
 		Main_Settings.visuals.grenadeesp = bool
 	end, { ["enabled"] = Main_Settings.visuals.grenadeesp })
     
-    local VisualsColor_Sector = Visuals_Catagory:Sector("Visuals Color")
-
-    local VisualsColor_Transparency = VisualsColor_Sector:Cheat("Slider", "Transparency", function(trans)
+    local VisualsColor_Transparency = ESP_Sector:Cheat("Slider", "Transparency", function(trans)
 		if loaded then
 			Main_Settings.visuals.transparency = trans / 10
 		end
@@ -258,22 +269,6 @@ if Drawing and getgc and writefile and readfile then
 		["suffix"] = "",
     })
 
-    local VisualsColor_ColorPicker = VisualsColor_Sector:Cheat("Colorpicker", "Visuals Color", function(color)
-        local hue, saturation, value = color:ToHSV()
-        Main_Settings.visuals.visualscolor = {hue, saturation, value}
-    end, { ["color"] = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3]) })
-    
-    local VisualsColor_RainBowToggle = VisualsColor_Sector:Cheat("Checkbox", "Rainbow", function(bool)
-		Main_Settings.visuals.rainbow = bool
-	end, { ["enabled"] = Main_Settings.visuals.rainbow })
-	
-	VisualsColor_Sector:Cheat("Button", "Reset", function()
-		Main_Settings.visuals.rainbow = false
-		
-		local hue, saturation, value = Color3.new(1, 0, 0):ToHSV()
-		Main_Settings.visuals.visualscolor = {hue, saturation, value}
-	end)
-	
     local CrossLine1 = Drawing.new("Line")
     CrossLine1.Visible = false
     CrossLine1.From = Vector2.new((workspace.CurrentCamera.ViewportSize.X / 2) - 12, workspace.CurrentCamera.ViewportSize.Y / 2)
@@ -333,10 +328,38 @@ if Drawing and getgc and writefile and readfile then
 				gethealth = v
 			end
 		end
-    end
+	end
+
+    local rainbowcolor
     
 	game:GetService("RunService").Heartbeat:Connect(function()
-	    local rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
+	    rainbowcolor = Color3.fromHSV(zigzag(counter),1,1)
+	    
+	    local boxespclr = Color3.new(Main_Settings.colors.boxesp[1], Main_Settings.colors.boxesp[2], Main_Settings.colors.boxesp[3])
+	    if Main_Settings.colors.boxesp[4] then
+	        boxespclr = rainbowcolor
+	    end
+	    
+	    local chamsclr = Color3.new(Main_Settings.colors.chams[1], Main_Settings.colors.chams[2], Main_Settings.colors.chams[3])
+	    if Main_Settings.colors.chams[4] then
+	        chamsclr = rainbowcolor
+	    end
+	    
+	    local tracersclr = Color3.new(Main_Settings.colors.tracers[1], Main_Settings.colors.tracers[2], Main_Settings.colors.tracers[3])
+	    if Main_Settings.colors.tracers[4] then
+	        tracersclr = rainbowcolor
+	    end
+	    
+	    local crosshairclr = Color3.new(Main_Settings.colors.crosshair[1], Main_Settings.colors.crosshair[2], Main_Settings.colors.crosshair[3])
+	    if Main_Settings.colors.crosshair[4] then
+	        crosshairclr = rainbowcolor
+	    end
+	    
+	    local fovclr = Color3.new(Main_Settings.colors.fov[1], Main_Settings.colors.fov[2], Main_Settings.colors.fov[3])
+	    if Main_Settings.colors.crosshair[4] then
+	        fovclr = rainbowcolor
+	    end
+	    
         pcall(function()
             FOVCircle.Filled = Main_Settings.aimbot.fovfilled
             FOVCircle.Visible = Main_Settings.aimbot.fov
@@ -346,12 +369,9 @@ if Drawing and getgc and writefile and readfile then
                 FOVCircle.Transparency = roundNumber(Main_Settings.visuals.transparency, 1)
             end
     		FOVCircle.Position = Vector2.new(game:GetService("Players").LocalPlayer:GetMouse().X, game:GetService("Players").LocalPlayer:GetMouse().Y + 43.5)
-    		if Main_Settings.visuals.rainbow then
-    			FOVCircle.Color = rainbowcolor
-    		else
-    			FOVCircle.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-    		end
-    		FOVCircle.Radius = Main_Settings.aimbot.fovradius
+    		FOVCircle.Color = fovclr
+    		FOVCircle.Radius = math.round(Main_Settings.aimbot.fovradius)
+    		FOVCircle.NumSides = Main_Settings.aimbot.fovsides
         end)
         
 		if Main_Settings.visuals.enabled then
@@ -389,11 +409,7 @@ if Drawing and getgc and writefile and readfile then
 										if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
 											ccccc = Color3.fromRGB(255, 255, 255)
 										else
-											if Main_Settings.visuals.rainbow then
-												ccccc = rainbowcolor
-											else
-												ccccc = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-											end
+											ccccc = tracersclr
 										end
 										
 										v2.value.To = Vector2.new(vector.X, vector.Y)
@@ -411,11 +427,7 @@ if Drawing and getgc and writefile and readfile then
 									if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
 										ccccc = Color3.fromRGB(255, 255, 255)
 									else
-										if Main_Settings.visuals.rainbow then
-											ccccc = rainbowcolor
-										else
-											ccccc = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-										end
+										ccccc = tracersclr
 									end
 									
 									local Line = Drawing.new("Line")
@@ -531,16 +543,8 @@ if Drawing and getgc and writefile and readfile then
                 CrossLine2.From = Vector2.new(game:GetService("Players").LocalPlayer:GetMouse().X, (game:GetService("Players").LocalPlayer:GetMouse().Y + 43.5) - 12)
                 CrossLine2.To = Vector2.new(game:GetService("Players").LocalPlayer:GetMouse().X, (game:GetService("Players").LocalPlayer:GetMouse().Y + 43.5) + 12)
                 
-                if Main_Settings.visuals.rainbow then
-            		CrossLine2.Color = rainbowcolor
-            	else
-            		CrossLine2.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-            	end
-            	if Main_Settings.visuals.rainbow then
-            		CrossLine1.Color = rainbowcolor
-            	else
-            		CrossLine1.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-            	end
+            	CrossLine2.Color = crosshairclr
+            	CrossLine1.Color = crosshairclr
 			else
                 CrossLine1.Visible = false
                 CrossLine2.Visible = false
@@ -573,17 +577,13 @@ if Drawing and getgc and writefile and readfile then
 				            local f = game.Workspace.CurrentCamera:WorldToScreenPoint(playerchar.rootpart.Parent:FindFirstChild("Head").Position)
             				local v22 = (Vector2.new(f.X, f.Y) - Vector2.new((game.Workspace.CurrentCamera.ViewportSize.X / 2), game.Workspace.CurrentCamera.ViewportSize.Y / 2)).Magnitude
 
-            				local ccccc
-            				if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
-            				    ccccc = Color3.fromRGB(255, 255, 255)
-            				else
-                                if Main_Settings.visuals.rainbow then
-                            		ccccc = rainbowcolor
-                            	else
-                            		ccccc = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-                            	end
-            				end
-    					    
+                			local ccccc
+							if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
+								ccccc = Color3.fromRGB(255, 255, 255)
+							else
+								ccccc = boxespclr
+							end
+
         					local Size = Vector3.new(2, 3, 0) * ((game:GetService("Players").LocalPlayer.Character:FindFirstChild("Head").Size.Y / 2) * 2)
         					local line1loc, Visible1 = game.Workspace.CurrentCamera:WorldToViewportPoint((playerchar.rootpart.CFrame * CFrame.new( Size.X,  Size.Y, 0)).p);
                             local line2loc, Visible2 = game.Workspace.CurrentCamera:WorldToViewportPoint((playerchar.rootpart.CFrame * CFrame.new(-Size.X,  Size.Y, 0)).p);
@@ -656,11 +656,7 @@ if Drawing and getgc and writefile and readfile then
                     				if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
                     				    ccccc = Color3.fromRGB(255, 255, 255)
                     				else
-                                        if Main_Settings.visuals.rainbow then
-                                    		ccccc = rainbowcolor
-                                    	else
-                                    		ccccc = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-                                    	end
+                                        ccccc = boxespclr
                     				end
     					            
                                     local Size = Vector3.new(2, 3, 0) * ((game:GetService("Players").LocalPlayer.Character.Head.Size.Y / 2) * 2)
@@ -730,16 +726,13 @@ if Drawing and getgc and writefile and readfile then
 						local f = game.Workspace.CurrentCamera:WorldToScreenPoint(playerchar:FindFirstChild("Head").Position)
 						local v22 = (Vector2.new(f.X, f.Y) - Vector2.new((game.Workspace.CurrentCamera.ViewportSize.X / 2), game.Workspace.CurrentCamera.ViewportSize.Y / 2)).Magnitude
 
-						local ccccc
+                        local ccccc
 						if Main_Settings.aimbot.fov and Main_Settings.aimbot.ignorefov == false and v22 <= Main_Settings.aimbot.fovradius then
 							ccccc = Color3.fromRGB(255, 255, 255)
 						else
-							if Main_Settings.visuals.rainbow then
-								ccccc = rainbowcolor
-							else
-								ccccc = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-							end
+							ccccc = chamsclr
 						end
+						
 						for i2,v2 in pairs(playerchar:GetChildren()) do
 							if (v2:IsA("BasePart") and not v2:IsA("Model")) and not v2:FindFirstChild("BoxHandleAdornment") and v2.Name ~= "HumanoidRootPart" then
 								local adornment = Instance.new("BoxHandleAdornment", v2)
@@ -1070,6 +1063,18 @@ if Drawing and getgc and writefile and readfile then
 		Main_Settings.aimbot.fovfilled = bool
     end, { ["enabled"] = Main_Settings.aimbot.fovfilled })
     
+    	--FOV Sides
+    local Aimbot_FovRadiusSlider = FOV_Sector:Cheat("Slider", "FOV Sides", function(x)
+        if loaded then
+		    Main_Settings.aimbot.fovsides = x
+		end
+	end, { 
+        ["default"] = Main_Settings.aimbot.fovsides,
+		["min"] = 0, 
+		["max"] = 50, 
+		["suffix"] = "sides",
+	})
+    
 		--Fov Radius
     local Aimbot_FovRadiusSlider = FOV_Sector:Cheat("Slider", "FOV Radius", function(x)
         if loaded then
@@ -1244,12 +1249,6 @@ if Drawing and getgc and writefile and readfile then
 	--///////////////////////////////////////////////////////////////////////--
 	--                                 Mods                                  --
 	--///////////////////////////////////////////////////////////////////////--
-	
-    for i,v in next, getgc(true) do
-        if type(v) == "table" and rawget(v,'bullethit') and rawget(v,'breakwindow') then
-            effects = v;
-        end
-    end
 	
     local Mods_Catagory = Window:Category("Mods")
     local Mods_Sector = Mods_Catagory:Sector("Mods")
@@ -1649,22 +1648,74 @@ if Drawing and getgc and writefile and readfile then
 	wait()
 	
 	function BulletTracer(p1, p2)
-		local beam = Instance.new("Part", game.Workspace)
-		beam.Anchored = true
-		beam.CanCollide = false
-		beam.Material = Enum.Material.ForceField
-		beam.Color = Color3.fromHSV(Main_Settings.visuals.visualscolor[1], Main_Settings.visuals.visualscolor[2], Main_Settings.visuals.visualscolor[3])
-		beam.Size = Vector3.new(0.1, 0.1, (p1 - p2).magnitude)
-		beam.CFrame = CFrame.new(p1, p2) * CFrame.new(0, 0, -beam.Size.Z / 2)
-		
-		spawn(function()
-			for i = 1, 60 * 1.5 do
-				game:GetService("RunService").RenderStepped:Wait()
-				beam.Transparency = i / (60 * 1.5)
-			end
-			beam:Destroy()
-		end)
+	    local tracercolor = Color3.new(Main_Settings.colors.bullettracers[1], Main_Settings.colors.bullettracers[2], Main_Settings.colors.bullettracers[3])
+	    if Main_Settings.colors.bullettracers[4] then
+	        tracercolor = rainbowcolor
+	    end
+        local colorSequence = ColorSequence.new(tracercolor, Color3.fromRGB(255, 255, 255))
+        local startoftracer = Instance.new("Part", game.Workspace.Map)
+        local endoftracer = Instance.new("Part", game.Workspace.Map)
+        local attach = Instance.new("Attachment", startoftracer)
+        local attach2 = Instance.new("Attachment", endoftracer)
+        local laser = Instance.new("Beam", startoftracer)
+        startoftracer.Size = Vector3.new(1, 1, 1)
+        startoftracer.Transparency = 1
+        startoftracer.CanCollide = false
+        startoftracer.CFrame = CFrame.new(p1)
+        startoftracer.Anchored = true
+        endoftracer.Size = Vector3.new(1, 1, 1)
+        endoftracer.Transparency = 1
+        endoftracer.CanCollide = false
+        endoftracer.CFrame = CFrame.new(p2)
+        endoftracer.Anchored = true
+        laser.FaceCamera = false
+        laser.Color = colorSequence
+        laser.LightEmission = 0
+        laser.LightInfluence = 0
+        laser.Width0 = 0.1
+        laser.Width1 = 0.1
+        laser.Attachment0 = attach
+        laser.Attachment1 = attach2
+        delay(1.6, function()
+            for i = 0.5, 1.3, 0.2 do
+                wait()
+                laser.Transparency = NumberSequence.new(i)
+            end
+            startoftracer:Destroy()
+            endoftracer:Destroy()
+        end)
 	end
+
+    function BulletImpact(p)
+	    local impactcolor = Color3.new(Main_Settings.colors.bulletimpact[1], Main_Settings.colors.bulletimpact[2], Main_Settings.colors.bulletimpact[3])
+	    if Main_Settings.colors.bulletimpact[4] then
+	        impactcolor = rainbowcolor
+	    end
+        local impact = Instance.new("Part", game.Workspace.Map)
+        impact.Color = impactcolor
+        impact.Size = Vector3.new(1, 1, 1)
+        impact.Transparency = 0.5
+        impact.Position = p
+        impact.Anchored = true
+        impact.CanCollide = false
+        delay(1.6, function()
+            for i = 1, 10 do
+                wait()
+                impact.Transparency = impact.Transparency + 0.05
+            end
+            impact:Destroy()
+        end)
+    end
+
+    local oldbullethit = effects.bullethit
+    wait()
+    effects.bullethit = function(self, ...)
+        local args = { ... }
+        if Main_Settings.visuals.bulletimpact then
+            BulletImpact(args[2])
+        end
+        return oldbullethit(self, unpack(args))
+    end
 
 	network.send = function(self, ...)
 		local args = {...}
@@ -1737,6 +1788,9 @@ if Drawing and getgc and writefile and readfile then
 					if Main_Settings.visuals.bullettracers then
 						BulletTracer(gamelogic.currentgun.barrel.Position, targetbody[aimatpart5].Position)
 					end
+					if Main_Settings.visuals.bulletimpact then
+						BulletImpact(targetbody[aimatpart5].Position)
+					end
 				end
 
 				return 
@@ -1745,7 +1799,7 @@ if Drawing and getgc and writefile and readfile then
 
 				for i,v in pairs(args[2]["bullets"]) do
 					if Main_Settings.visuals.bullettracers then
-						BulletTracer(gamelogic.currentgun.barrel.Position, game:GetService("Players").LocalPlayer:GetMouse().Hit.Position)
+						BulletTracer(gamelogic.currentgun.barrel.Position, v[1] * v[2])
 					end
 				end
 
@@ -1775,6 +1829,96 @@ if Drawing and getgc and writefile and readfile then
             end
         end
     end)
+	
+	--///////////////////////////////////////////////////////////////////////--
+	--                               Colors                                  --
+	--///////////////////////////////////////////////////////////////////////--
+	
+	local Colors_Catagory = Window:Category("Colors")
+	
+	local BoxESP_Sector = Colors_Catagory:Sector("Box ESP")
+        --BoxESP Color
+    local BoxESP_ColorPicker = BoxESP_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.boxesp = {color.R, color.B, color.G, Main_Settings.colors.boxesp[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.boxesp[1], Main_Settings.colors.boxesp[2], Main_Settings.colors.boxesp[3]) })
+    
+		--Rainbow
+	local BoxESP_Rainbow = BoxESP_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.boxesp = {Main_Settings.colors.boxesp[1], Main_Settings.colors.boxesp[2], Main_Settings.colors.boxesp[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.boxesp[4]})
+	
+	
+	
+	local Chams_Sector = Colors_Catagory:Sector("Chams")
+        --Chams Color
+    local Chams_ColorPicker = Chams_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.chams = {color.R, color.B, color.G, Main_Settings.colors.chams[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.chams[1], Main_Settings.colors.chams[2], Main_Settings.colors.chams[3]) })
+		--Rainbow
+	local Chams_Rainbow = Chams_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.chams = {Main_Settings.colors.chams[1], Main_Settings.colors.chams[2], Main_Settings.colors.chams[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.chams[4]})
+	
+	
+	
+	local Tracers_Sector = Colors_Catagory:Sector("Tracers")
+        --Tracers Color
+    local Tracers_ColorPicker = Tracers_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.tracers = {color.R, color.B, color.G, Main_Settings.colors.tracers[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.tracers[1], Main_Settings.colors.tracers[2], Main_Settings.colors.tracers[3]) })
+		--Rainbow
+	local Tracers_Rainbow = Tracers_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.tracers = {Main_Settings.colors.tracers[1], Main_Settings.colors.tracers[2], Main_Settings.colors.tracers[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.tracers[4]})
+	
+	
+	
+	local Fov_Sector = Colors_Catagory:Sector("FOV")
+        --FOV Color
+    local Fov_ColorPicker = Fov_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.fov = {color.R, color.B, color.G, Main_Settings.colors.fov[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.fov[1], Main_Settings.colors.fov[2], Main_Settings.colors.fov[3]) })
+		--Rainbow
+	local Fov_Rainbow = Fov_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.fov = {Main_Settings.colors.fov[1], Main_Settings.colors.fov[2], Main_Settings.colors.fov[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.fov[4]})
+	
+	
+	
+	local BulletTracers_Sector = Colors_Catagory:Sector("Bullet Tracers")
+        --Bullet Tracers Color
+    local BulletTracers_ColorPicker = BulletTracers_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.bullettracers = {color.R, color.B, color.G, Main_Settings.colors.bullettracers[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.bullettracers[1], Main_Settings.colors.bullettracers[2], Main_Settings.colors.bullettracers[3]) })
+		--Rainbow
+	local BulletTracers_Rainbow = BulletTracers_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.bullettracers = {Main_Settings.colors.bullettracers[1], Main_Settings.colors.bullettracers[2], Main_Settings.colors.bullettracers[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.bullettracers[4]})
+	
+	
+	
+	local BulletImpacts_Sector = Colors_Catagory:Sector("Bullet Impacts")
+        --Bullet Impacts Color
+    local BulletImpacts_ColorPicker = BulletImpacts_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.bulletimpact = {color.R, color.B, color.G, Main_Settings.colors.bulletimpact[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.bulletimpact[1], Main_Settings.colors.bulletimpact[2], Main_Settings.colors.bulletimpact[3]) })
+		--Rainbow
+	local BulletImpacts_Rainbow = BulletImpacts_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.bulletimpact = {Main_Settings.colors.bulletimpact[1], Main_Settings.colors.bulletimpact[2], Main_Settings.colors.bulletimpact[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.bulletimpact[4]})
+	
+	
+	
+	local Crosshair_Sector = Colors_Catagory:Sector("Crosshair")
+        --Crosshair Color
+    local Crosshair_ColorPicker = Crosshair_Sector:Cheat("Colorpicker", "Color", function(color)
+        Main_Settings.colors.crosshair = {color.R, color.B, color.G, Main_Settings.colors.crosshair[4]}
+    end, { ["color"] = Color3.fromRGB(Main_Settings.colors.crosshair[1], Main_Settings.colors.crosshair[2], Main_Settings.colors.crosshair[3]) })
+		--Rainbow
+	local Crosshair_Rainbow = Crosshair_Sector:Cheat("Checkbox", "Rainbow", function(bool)
+		Main_Settings.colors.crosshair = {Main_Settings.colors.crosshair[1], Main_Settings.colors.crosshair[2], Main_Settings.colors.crosshair[3], bool}
+	end, { ["enabled"] = Main_Settings.colors.crosshair[4]})
+	
 	
 	--///////////////////////////////////////////////////////////////////////--
 	--                                Other                                  --
