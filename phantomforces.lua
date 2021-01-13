@@ -60,7 +60,7 @@ if Drawing and getgc and writefile and readfile then
 		player = {
 		    freezeongameend = false,
 		    alwaysspawn = false,
-		    cameraoffset = {0.69999998807907 -1 -1.2999999523163},
+		    cameraoffset = {0.7, -1, -1.3},
 		},
 		other = {
 			walkspeed = 15,
@@ -1857,13 +1857,21 @@ if Drawing and getgc and writefile and readfile then
 	    end
 	end)
 	
+	local updatefov
+    for i,v in pairs(getgc()) do
+        if string.find(debug.getinfo(v).name:lower(), "updatefov") then
+            updatefov = v
+        end
+    end
+	
 	local camoffset_Sector = Player_Catagory:Sector("Camera Offset")
 	
 	    --X
 	local Player_XSlider = camoffset_Sector:Cheat("Slider", "X", function(x)
 	    if loaded then
-    		Main_Settings.player.cameraoffset = {x, Main_Settings.player.cameraoffset.Y, Main_Settings.player.cameraoffset.Z}
+    		Main_Settings.player.cameraoffset = {x, Main_Settings.player.cameraoffset[2], Main_Settings.player.cameraoffset[3]}
 	    end
+	    updatefov()
 	end, {
         ["default"] = Main_Settings.player.cameraoffset[1],
 		["min"] = -10,
@@ -1874,8 +1882,9 @@ if Drawing and getgc and writefile and readfile then
 	    --Y
 	local Player_YSlider = camoffset_Sector:Cheat("Slider", "Y", function(x)
 	    if loaded then
-    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset.X, x, Main_Settings.player.cameraoffset.Z}
+    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset[1], x, Main_Settings.player.cameraoffset[3]}
 	    end
+	    updatefov()
 	end, {
         ["default"] = Main_Settings.player.cameraoffset[2],
 		["min"] = -10,
@@ -1886,8 +1895,9 @@ if Drawing and getgc and writefile and readfile then
 	    --Z
 	local Player_ZSlider = camoffset_Sector:Cheat("Slider", "Z", function(x)
 	    if loaded then
-    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset.X, Main_Settings.player.cameraoffset.Y, x}
+    		Main_Settings.player.cameraoffset = {Main_Settings.player.cameraoffset[1], Main_Settings.player.cameraoffset[2], x}
 	    end
+	    updatefov()
 	end, {
         ["default"] = Main_Settings.player.cameraoffset[3],
 		["min"] = -10,
@@ -1895,11 +1905,7 @@ if Drawing and getgc and writefile and readfile then
 		["suffix"] = " Z",
 	})
 	
-	
 	game:GetService("RunService").RenderStepped:connect(function()
-	    if gamelogic.currentgun then
-	        gamelogic.currentgun.data.mainoffset = CFrame.new(Main_Settings.player.cameraoffset[1], Main_Settings.player.cameraoffset[2], Main_Settings.player.cameraoffset[3])
-	    end
     	for i,v in pairs(game.ReplicatedStorage:FindFirstChild("GunModules"):GetChildren()) do
 	        local gun = require(v)
 	        if gun["mainoffset"] then
